@@ -13,12 +13,6 @@ body {
   margin-bottom: 1.5rem;
 }
 
-.time {
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 0.5rem;
-}
-
 h1 {
   font-size: 1.8rem;
   margin: 0;
@@ -41,6 +35,11 @@ h1 {
   margin-bottom: 1.5rem;
   overflow-x: auto;
   padding-bottom: 0.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.category-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .category-tabs button {
@@ -103,6 +102,22 @@ h1 {
 .price {
   font-weight: bold;
   color: #e74c3c;
+}
+
+.rating {
+  color: #f39c12;
+  font-size: 0.9rem;
+}
+
+.spice {
+  color: #e74c3c;
+  font-size: 0.9rem;
+}
+
+.menu-card .details {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
 }
 
 /* Responsive */
