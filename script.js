@@ -17,22 +17,21 @@ const menu = [
   { name: "Soy Garlic", rating: 4 }
 ];
 
-const grid = document.querySelector('.flavors .grid');
+const grid = document.getElementById('flavorGrid');
 const search = document.getElementById('searchBar');
 
 function renderFlavors(list) {
-  grid.innerHTML = '';
+  grid.innerHTML = '';          
   list.forEach(item => {
-    const fullStars = '★'.repeat(Math.floor(item.rating));
-    const halfStar = item.rating % 1 >= 0.5 ? '½' : '';
+    const full = '★'.repeat(Math.floor(item.rating));
+    const half = item.rating % 1 ? '½' : '';
     const chili = item.spice ? `<span class="spice-icons">${'🌶️'.repeat(item.spice)}</span>` : '';
-    const card = document.createElement('div');
-    card.className = 'flavor-card';
-    card.innerHTML = `
-      <h3>${item.name}${chili}</h3>
-      <div class="star-icons">${fullStars}${halfStar}</div>
+    grid.innerHTML += `
+      <div class="flavor-card">
+        <h3>${item.name}${chili}</h3>
+        <div class="star-icons">${full}${half}</div>
+      </div>
     `;
-    grid.append(card);
   });
 }
 
@@ -41,5 +40,4 @@ search.addEventListener('input', e => {
   renderFlavors(menu.filter(f => f.name.toLowerCase().includes(term)));
 });
 
-// initial
 renderFlavors(menu);
