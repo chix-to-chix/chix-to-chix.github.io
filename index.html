@@ -4,27 +4,55 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chix To Chix Menu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="texture-overlay"></div>
   <main class="app-container">
     <header class="app-header">
-      <h1>Welcome to Chix To Chix!</h1>
+      <div class="logo-container">
+        <div class="logo-circle">
+          <i class="fas fa-utensils logo-icon"></i>
+        </div>
+      </div>
+      <h1>Chix To Chix <span class="highlight">Menu</span></h1>
       <p class="subtitle">Unlimited Chicken Wings</p>
+      <div class="header-divider">
+        <div class="divider-line"></div>
+        <div class="divider-icon"><i class="fas fa-drumstick-bite"></i></div>
+        <div class="divider-line"></div>
+      </div>
     </header>
 
-    <input type="text" id="searchBar" placeholder="Search flavors, meals..." />
-
-    <div class="category-tabs">
-      <button class="active">All</button>
-      <button>Unli Wings</button>
-      <button>Solo & Bilao</button>
-      <button>Beverages</button>
-      <button>Extras</button>
+    <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" id="searchBar" placeholder="Search flavors, meals..." />
     </div>
 
+    <div class="category-tabs">
+      <button class="active" data-category="all">
+        <i class="fas fa-bars"></i> All
+      </button>
+      <button data-category="Unli Wings">
+        <i class="fas fa-infinity"></i> Unli Wings
+      </button>
+      <button data-category="Solo & Bilao">
+        <i class="fas fa-utensils"></i> Solo & Bilao
+      </button>
+      <button data-category="Beverages">
+        <i class="fas fa-glass-whiskey"></i> Beverages
+      </button>
+      <button data-category="Extras">
+        <i class="fas fa-plus-circle"></i> Extras
+      </button>
+    </div>
+
+    <h2 class="unli-price-header" style="display: none;">Unlimited Wings - ₱299.00</h2>
+
     <section id="menuList" class="card-grid">
-      <!-- Menu items -->
+      <!-- Menu items will be inserted here by JavaScript -->
     </section>
   </main>
 
