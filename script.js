@@ -3,7 +3,7 @@ const flavors = [
     name: "Classic", 
     category: "Unli Wings",
     description: "Original fried chicken flavor",
-    rating: 4 
+    rating: 4
   },
   { 
     name: "Cheese", 
@@ -200,18 +200,14 @@ function renderMenu(items) {
     const card = document.createElement("div");
     card.className = "menu-card";
     
-    // For Unli Wings, show rating instead of price
     const priceOrRating = item.category === "Unli Wings" 
       ? `<div class="rating">${"★".repeat(Math.floor(item.rating))}${item.rating % 1 >= 0.5 ? "½" : ""}</div>`
       : `<span class="price">${item.price}</span>`;
     
-    // Add spice indicators if they exist
-    const spiceIndicator = item.spice ? `<span class="spice">${"🌶️".repeat(item.spice)}</span>` : "";
-    
     card.innerHTML = `
       <img src="img/sample.jpg" alt="${item.name}" />
       <div class="content">
-        <h3>${item.name} ${spiceIndicator}</h3>
+        <h3>${item.name}</h3>
         <p>${item.description}</p>
         <div class="details">
           ${priceOrRating}
@@ -225,7 +221,6 @@ function renderMenu(items) {
 
 // Initial render
 renderMenu(allItems);
-document.querySelector(".results-count").textContent = `${allItems.length} items`;
 
 // Search functionality
 searchBar.addEventListener("input", (e) => {
@@ -235,7 +230,6 @@ searchBar.addEventListener("input", (e) => {
     item.description.toLowerCase().includes(value)
   );
   renderMenu(filtered);
-  document.querySelector(".results-count").textContent = `${filtered.length} items`;
 });
 
 // Category filter
@@ -247,11 +241,9 @@ categoryButtons.forEach(button => {
     const category = button.textContent;
     if (category === "All") {
       renderMenu(allItems);
-      document.querySelector(".results-count").textContent = `${allItems.length} items`;
     } else {
       const filtered = allItems.filter(item => item.category === category);
       renderMenu(filtered);
-      document.querySelector(".results-count").textContent = `${filtered.length} items`;
     }
   });
 });
