@@ -245,7 +245,7 @@ h1 .highlight {
   }
   
   .card-grid {
-    grid-template-columns: repeat(2, 1fr); /* Ensures 2 cards per row */
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.8rem;
   }
   
