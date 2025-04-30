@@ -1,51 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Chix To Chix Menu</title>
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
   <header>
     <h1>Chix To Chix</h1>
-    <p>Unlimited Chicken Wings</p>
-    <input type="text" id="searchBar" placeholder="Search flavors, meals..." />
+    <p class="tagline">Unlimited Chicken Wings & Java Rice</p>
+    <div class="search-wrap">
+      <input type="text" id="searchBar" placeholder="Search flavors or meals…">
+      <svg class="icon search-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M9.5 3A6.5 6.5 0 1 1 3 9.5 6.507 6.507 0 0 1 9.5 3m0-2A8.5 8.5 0 1 0 18 9.5 8.51 8.51 0 0 0 9.5 1z"/><path fill="currentColor" d="M21.71 20.29l-5-5 1.42-1.42 5 5z"/></svg>
+    </div>
   </header>
 
-  <section id="menuList">
-    <div class="menu-item">
-      <h3>Ala Carte / Take Out</h3>
-      <ul>
-        <li>Sulit Meal (3pcs + Java Rice) <span class="price">₱119.00</span></li>
-        <li>Busog Meal (6pcs + Java Rice) <span class="price">₱199.00</span></li>
-        <li>Small Bilao (12–15pcs) <span class="price">₱449.00</span></li>
-        <li>Medium Bilao (18–22pcs) <span class="price">₱549.00</span></li>
-        <li>Large Bilao (35–40pcs) <span class="price">₱999.00</span></li>
+  <main id="menuList">
+    <!-- Ala Carte / Take Out -->
+    <section class="menu-section">
+      <h2>Ala Carte / Take Out</h2>
+      <ul class="item-list">
+        <li><span class="item-name">Sulit Meal (3pcs + Java Rice)</span><span class="price">₱119</span></li>
+        <li><span class="item-name">Busog Meal (6pcs + Java Rice)</span><span class="price">₱199</span></li>
+        <li><span class="item-name">Small Bilao (12–15pcs)</span><span class="price">₱449</span></li>
+        <li><span class="item-name">Medium Bilao (18–22pcs)</span><span class="price">₱549</span></li>
+        <li><span class="item-name">Large Bilao (35–40pcs)</span><span class="price">₱999</span></li>
       </ul>
-    </div>
+    </section>
 
-    <div class="menu-item">
-      <h3>Beverages & Extras</h3>
-      <ul>
-        <li>Big Pitcher Iced Tea <span class="price">₱99.00</span></li>
-        <li>Small Pitcher Iced Tea <span class="price">₱69.00</span></li>
-        <li>Softdrinks Mismo <span class="price">₱30.00</span></li>
-        <li>Softdrinks 1.5L <span class="price">₱99.00</span></li>
-        <li>Bottled Water <span class="price">₱15.00</span></li>
-        <li>Extra Rice <span class="price">₱20.00</span></li>
-        <li>Extra Java <span class="price">₱30.00</span></li>
-        <li>Buttered Corn <span class="price">₱25.00</span></li>
-        <li>Cheese Fries <span class="price">₱59.00</span></li>
-        <li>Extra Sauce <span class="price">₱25.00</span></li>
+    <!-- Beverages & Extras -->
+    <section class="menu-section">
+      <h2>Beverages &amp; Extras</h2>
+      <ul class="item-list">
+        <li><span class="item-name">Big Pitcher Iced Tea</span><span class="price">₱99</span></li>
+        <li><span class="item-name">Small Pitcher Iced Tea</span><span class="price">₱69</span></li>
+        <li><span class="item-name">Softdrinks Mismo</span><span class="price">₱30</span></li>
+        <li><span class="item-name">Softdrinks 1.5L</span><span class="price">₱99</span></li>
+        <li><span class="item-name">Bottled Water</span><span class="price">₱15</span></li>
+        <li><span class="item-name">Extra Rice</span><span class="price">₱20</span></li>
+        <li><span class="item-name">Extra Java</span><span class="price">₱30</span></li>
+        <li><span class="item-name">Buttered Corn</span><span class="price">₱25</span></li>
+        <li><span class="item-name">Cheese Fries</span><span class="price">₱59</span></li>
+        <li><span class="item-name">Extra Sauce</span><span class="price">₱25</span></li>
       </ul>
-    </div>
+    </section>
 
-    <!-- Flavors section will still be dynamic -->
-  </section>
+    <!-- Flavors -->
+    <section class="menu-section flavors">
+      <h2>Flavors</h2>
+      <div class="grid">
+        <!-- JavaScript will inject .flavor-card -->
+      </div>
+    </section>
+  </main>
 
   <footer>
-    <p>Menu and prices are subject to change.</p>
+    <p>Menu and prices are subject to change. #LilipadKaSaSarap</p>
   </footer>
 
   <script src="script.js"></script>
