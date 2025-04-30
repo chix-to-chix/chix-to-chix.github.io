@@ -349,45 +349,73 @@ h1 .highlight {
   .card-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.2rem;
-  }
-  
-  .menu-card img {
-    height: 130px;
-  }
-}
-
-@media (max-width: 480px) {
-  .app-container {
-    padding: 1rem;
-  }
-  
-  h1 {
-    font-size: 1.8rem;
-  }
-  
-  .subtitle {
-    font-size: 0.9rem;
-  }
-  
-  #searchBar {
-    width: calc(100%);
-    padding: 0.9rem 1rem 0.9rem 2.8rem;
-  }
-  
-  .search-icon {
-    left: 1rem;
-  }
-  
-  .card-grid {
-    gap: 1rem;
+    padding: 0 0.5rem;
   }
   
   .menu-card img {
     height: 120px;
   }
   
-  .category-tabs button {
-    padding: 0.7rem 1.1rem;
+  .search-container {
+    width: calc(100% - 1rem);
+    margin-bottom: 1.5rem;
+  }
+  
+  .category-tabs {
+    padding: 0.8rem 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-container {
+    padding: 1rem 0.5rem;
+  }
+  
+  h1 {
+    font-size: 1.6rem; 
+  }
+  
+  .subtitle {
     font-size: 0.85rem;
+  }
+  
+  .logo-img {
+    width: 70px; 
+    height: 70px;
+  }
+  
+  #searchBar {
+    padding: 0.8rem 1rem 0.8rem 2.5rem; 
+    font-size: 0.9rem;
+  }
+  
+  .search-icon {
+    left: 0.8rem;
+    font-size: 0.9rem;
+  }
+  
+  .card-grid {
+    grid-template-columns: 1fr; 
+    gap: 1rem;
+    padding: 0 0.5rem;
+  }
+  
+  .menu-card img {
+    height: 140px; 
+  }
+  
+  .category-tabs button {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.8rem; 
+  }
+  
+  .category-tabs button i {
+    font-size: 0.8rem;
+  }
+  
+  .unli-price-header {
+    font-size: 1.2rem;
+    margin: 1rem 0;
   }
 }
