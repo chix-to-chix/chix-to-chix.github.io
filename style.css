@@ -34,7 +34,7 @@ h1 {
 }
 
 #searchBar {
-  width: calc(100% - 2.4rem);
+  width: calc(100%);
   padding: 1rem 1.2rem;
   margin-bottom: 1.8rem;
   border: 1px solid #e0d5c8;
@@ -191,7 +191,7 @@ h1 {
   }
   
   #searchBar {
-    width: calc(100% - 2rem);
+    width: calc(100%);
     padding: 0.9rem 1rem;
   }
   
