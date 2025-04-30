@@ -232,7 +232,7 @@ const allItems = [...menuItems];
 const menuList = document.getElementById("menuList");
 const searchBar = document.getElementById("searchBar");
 const categoryButtons = document.querySelectorAll(".category-tabs button");
-const unliPrice = "₱299";
+const unliPrice = "₱299.00";
 
 // Create price header element
 const priceHeader = document.createElement("h2");
