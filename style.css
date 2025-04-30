@@ -71,11 +71,11 @@ main {
 
 .menu-section h2 {
   font-family: 'Playfair Display', serif;
-  font-size: 1.5rem;
-  border-bottom: 2px solid var(--accent);
-  display: inline-block;
-  margin-bottom: 1rem;
+  font-size: 1.6rem;
   color: var(--primary);
+  border-bottom: 3px solid var(--accent);
+  padding-bottom: 0.25rem;
+  margin-bottom: 1rem;
 }
 
 .item-list {
