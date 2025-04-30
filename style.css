@@ -10,6 +10,8 @@ body {
   padding: 1.5rem 1rem;
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .app-header {
@@ -24,7 +26,7 @@ h1 {
 }
 
 #searchBar {
-  width: 100%;
+  width: calc(100% - 2.4rem);
   padding: 1rem 1.2rem;
   margin-bottom: 1.5rem;
   border: none;
@@ -32,6 +34,8 @@ h1 {
   font-size: 1rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   background-color: rgba(255,255,255,0.8);
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .category-tabs {
@@ -128,6 +132,13 @@ h1 {
 
 /* Responsive */
 @media (max-width: 480px) {
+  .app-container {
+    padding: 1rem;
+  }
+  
+  #searchBar {
+    width: calc(100% - 2rem);
+  }
   .card-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
