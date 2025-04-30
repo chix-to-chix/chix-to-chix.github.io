@@ -233,15 +233,9 @@ const menuList = document.getElementById("menuList");
 const searchBar = document.getElementById("searchBar");
 const categoryButtons = document.querySelectorAll(".category-tabs button");
 const unliPrice = "₱299.00";
+const priceHeader = document.querySelector(".unli-price-header");
 
-// Create price header element
-const priceHeader = document.createElement("h2");
-priceHeader.className = "unli-price-header";
-priceHeader.textContent = `Unlimited Wings - ${unliPrice}`;
-priceHeader.style.display = "none"; // Hidden by default
-document.querySelector(".app-container").insertBefore(priceHeader, menuList);
-
-function renderMenu(items, category = "All") {
+function renderMenu(items, category = "all") {
   menuList.innerHTML = "";
   
   if (category === "Unli Wings") {
@@ -250,7 +244,8 @@ function renderMenu(items, category = "All") {
     priceHeader.style.display = "none";
   }
 
-  if (category === "All") {
+  if (category === "all") {
+    // Add Unli Wings card
     const unliCard = document.createElement("div");
     unliCard.className = "menu-card";
     unliCard.innerHTML = `
@@ -282,8 +277,15 @@ function renderMenu(items, category = "All") {
       });
     });
   } 
-  // For specific categories, show all items
+  else if (category === "Unli Wings") {
+    // Render all wing flavors
+    items.forEach(item => {
+      const card = createCard(item);
+      menuList.appendChild(card);
+    });
+  }
   else {
+    // Render items for specific category
     items.forEach(item => {
       const card = createCard(item);
       menuList.appendChild(card);
@@ -319,9 +321,9 @@ renderMenu(allItems);
 // Search functionality
 searchBar.addEventListener("input", (e) => {
   const value = e.target.value.toLowerCase();
-  const currentCategory = document.querySelector(".category-tabs button.active").textContent;
+  const currentCategory = document.querySelector(".category-tabs button.active").dataset.category;
   
-  if (currentCategory === "All") {
+  if (currentCategory === "all") {
     const filtered = allItems.filter(item => 
       item.name.toLowerCase().includes(value) || 
       item.description.toLowerCase().includes(value)
@@ -349,8 +351,8 @@ categoryButtons.forEach(button => {
     categoryButtons.forEach(btn => btn.classList.remove("active"));
     button.classList.add("active");
     
-    const category = button.textContent;
-    if (category === "All") {
+    const category = button.dataset.category;
+    if (category === "all") {
       renderMenu(allItems);
     } else if (category === "Unli Wings") {
       renderMenu(flavors, "Unli Wings");
