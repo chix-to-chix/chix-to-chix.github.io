@@ -130,7 +130,7 @@ h1 .highlight {
 }
 
 #searchBar {
-  width: 100%;
+  width: calc(100%);
   padding: 1rem 1.2rem 1rem 3rem;
   margin-bottom: 0;
   border: none;
@@ -362,6 +362,7 @@ h1 .highlight {
   }
   
   #searchBar {
+    width: calc(100%);
     padding: 0.9rem 1rem 0.9rem 2.8rem;
   }
   
