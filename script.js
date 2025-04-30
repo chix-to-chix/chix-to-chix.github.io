@@ -21,6 +21,7 @@ const menuList = document.getElementById("menuList");
 
 function renderMenu(items) {
   menuList.innerHTML = "";
+
   items.forEach(item => {
     const fullStars = "★".repeat(Math.floor(item.rating));
     const halfStar = item.rating % 1 >= 0.5 ? "½" : "";
