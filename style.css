@@ -35,6 +35,13 @@ body {
   opacity: 0.6;
 }
 
+.logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
 .app-container {
   padding: 1.5rem 1rem;
   max-width: 1200px;
@@ -42,6 +49,13 @@ body {
   width: 100%;
   box-sizing: border-box;
   position: relative;
+}
+
+.app-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .app-header {
@@ -118,6 +132,10 @@ h1 .highlight {
 .search-container {
   position: relative;
   margin-bottom: 2rem;
+  max-width: 1200px;
+  width: 100%;
+  padding: 0 1rem;
+  box-sizing: border-box;
 }
 
 .search-icon {
@@ -158,8 +176,11 @@ h1 .highlight {
   gap: 0.8rem;
   margin-bottom: 2rem;
   overflow-x: auto;
-  padding-bottom: 0.8rem;
+  padding: 0.8rem 1rem;
   -webkit-overflow-scrolling: touch;
+  width: 100%;
+  max-width: 1200px;
+  box-sizing: border-box;
 }
 
 .category-tabs::-webkit-scrollbar {
@@ -204,16 +225,21 @@ h1 .highlight {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 1.8rem;
+  padding: 0 1rem;
+  width: 100%;
+  max-width: 1200px;
+  box-sizing: border-box;
 }
 
 .menu-card {
   background: var(--card-bg);
   border-radius: 18px;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: var(--shadow);
   transition: var(--transition);
   position: relative;
   border: none;
+  z-index: 1;
 }
 
 .menu-card::before {
@@ -231,6 +257,7 @@ h1 .highlight {
 .menu-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+  z-index: 2;
 }
 
 .menu-card:hover::before {
