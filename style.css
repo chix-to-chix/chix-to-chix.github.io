@@ -1,0 +1,106 @@
+/* General layout and color palette */
+body {
+  font-family: 'Georgia', serif;
+  margin: 0;
+  padding: 0;
+  background-color: #fefcfb;
+  color: #2c2c2c;
+  line-height: 1.6;
+}
+
+header {
+  background-color: #3b2f2f;
+  color: #fff;
+  padding: 2rem 1rem;
+  text-align: center;
+  border-bottom: 5px solid #b39877;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+header p {
+  font-size: 1rem;
+  color: #e0d4c1;
+  margin-top: 0.5rem;
+}
+
+section {
+  max-width: 800px;
+  margin: auto;
+  padding: 2rem 1.5rem;
+}
+
+h2 {
+  font-size: 1.4rem;
+  margin-top: 2rem;
+  color: #3b2f2f;
+  border-bottom: 2px solid #b39877;
+  padding-bottom: 0.5rem;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 1rem;
+}
+
+li {
+  margin: 0.6rem 0;
+  font-size: 1rem;
+  border-bottom: 1px dotted #ccc;
+  padding-bottom: 0.4rem;
+}
+
+.price {
+  float: right;
+  color: #b86b34;
+  font-weight: bold;
+}
+
+/* Flavors Grid */
+.flavors-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.flavors-grid span {
+  background: #f4eee9;
+  border: 1px solid #b39877;
+  padding: 0.5rem 0.8rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  color: #3b2f2f;
+  white-space: nowrap;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  font-size: 0.85rem;
+  padding: 2rem 1rem;
+  color: #999;
+  border-top: 1px solid #ddd;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  .price {
+    float: none;
+    display: block;
+    margin-top: 0.2rem;
+  }
+
+  .flavors-grid {
+    flex-direction: column;
+  }
+}
