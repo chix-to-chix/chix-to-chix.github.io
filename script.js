@@ -14,7 +14,7 @@ const menu = [
   { name: "Spicy Buffalo", rating: 4.5, spice: 2 },
   { name: "Sweet Chili", rating: 4, spice: 2 },
   { name: "Hickory Barbeque", rating: 4 },
-  { name: "Soy Garlic", rating: 4 },
+  { name: "Soy Garlic", rating: 4 }
 ];
 
 const menuList = document.getElementById("menuList");
@@ -22,12 +22,14 @@ const menuList = document.getElementById("menuList");
 function renderMenu(items) {
   menuList.innerHTML = "";
   items.forEach(item => {
-    const stars = "★".repeat(Math.floor(item.rating)) + (item.rating % 1 ? "½" : "");
+    const fullStars = "★".repeat(Math.floor(item.rating));
+    const halfStar = item.rating % 1 >= 0.5 ? "½" : "";
     const chili = item.spice ? `<span class="spice-icons">${"🌶️".repeat(item.spice)}</span>` : "";
+
     const html = `
       <div class="menu-item">
         <h3>${item.name} ${chili}</h3>
-        <div class="star-icons">${stars}</div>
+        <div class="star-icons">${fullStars}${halfStar}</div>
       </div>
     `;
     menuList.innerHTML += html;
