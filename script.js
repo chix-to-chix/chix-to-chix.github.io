@@ -105,31 +105,31 @@ const flavors = [
 const menuItems = [
   { 
     name: "Sulit Meal", 
-    category: "Solo and Bilao",
+    category: "Solo & Bilao",
     price: "₱119.00",
     description: "3pcs + Java Rice"
   },
   { 
     name: "Busog Meal", 
-    category: "Solo and Bilao",
+    category: "Solo & Bilao",
     price: "₱199.00",
     description: "6pcs + Java Rice"
   },
   { 
     name: "Small Bilao", 
-    category: "Solo and Bilao",
+    category: "Solo & Bilao",
     price: "₱449.00",
     description: "12-15pcs"
   },
   { 
     name: "Medium Bilao", 
-    category: "Solo and Bilao",
+    category: "Solo & Bilao",
     price: "₱549.00",
     description: "18-22pcs"
   },
   { 
     name: "Large Bilao", 
-    category: "Solo and Bilao",
+    category: "Solo & Bilao",
     price: "₱999.00",
     description: "35-40pcs"
   },
