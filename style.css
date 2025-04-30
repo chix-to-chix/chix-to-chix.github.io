@@ -35,18 +35,6 @@ body {
   opacity: 0.6;
 }
 
-.logo-img {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  transition: var(--transition);
-}
-
-.logo-img:hover {
-  transform: scale(1.05);
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2));
-}
-
 .app-container {
   padding: 1.5rem 1rem;
   max-width: 1200px;
@@ -73,12 +61,17 @@ body {
   display: flex;
   justify-content: center;
   margin-bottom: 1.5rem;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
 }
 
-.logo-icon {
-  color: white;
-  font-size: 2rem;
+.logo-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  transition: var(--transition);
+}
+
+.logo-img:hover {
+  transform: scale(1.05);
 }
 
 h1 {
@@ -396,9 +389,5 @@ h1 .highlight {
   .category-tabs button {
     padding: 0.7rem 1.1rem;
     font-size: 0.85rem;
-  }
-  
-  .logo-icon {
-    font-size: 1.5rem;
   }
 }
