@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Chix To Chix Menu</title>
-
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -16,13 +13,13 @@
     <h1>Chix To Chix</h1>
     <p class="tagline">Unlimited Chicken Wings</p>
     <div class="search-wrap">
-      <input type="text" id="searchBar" placeholder="Search flavors or meals…">
+      <input type="text" id="searchBar" placeholder="Search flavors or meals…" />
       <svg class="icon search-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M9.5 3A6.5 6.5 0 1 1 3 9.5 6.507 6.507 0 0 1 9.5 3m0-2A8.5 8.5 0 1 0 18 9.5 8.51 8.51 0 0 0 9.5 1z"/><path fill="currentColor" d="M21.71 20.29l-5-5 1.42-1.42 5 5z"/></svg>
     </div>
   </header>
 
-  <main id="menuList">
-    <!-- Ala Carte / Take Out -->
+  <!-- STATIC SECTIONS: never touched by JS -->
+  <main>
     <section class="menu-section">
       <h2>Ala Carte / Take Out</h2>
       <ul class="item-list">
@@ -34,9 +31,8 @@
       </ul>
     </section>
 
-    <!-- Beverages & Extras -->
     <section class="menu-section">
-      <h2>Beverages and Extras</h2>
+      <h2>Beverages &amp; Extras</h2>
       <ul class="item-list">
         <li><span class="item-name">Big Pitcher Iced Tea</span><span class="price">₱99</span></li>
         <li><span class="item-name">Small Pitcher Iced Tea</span><span class="price">₱69</span></li>
@@ -51,11 +47,11 @@
       </ul>
     </section>
 
-    <!-- Flavors -->
+    <!-- DYNAMIC FLAVORS -->
     <section class="menu-section flavors">
       <h2>Flavors</h2>
-      <div class="grid">
-        <!-- JavaScript will inject .flavor-card -->
+      <div class="grid" id="flavorGrid">
+        <!-- JS injects flavor cards here -->
       </div>
     </section>
   </main>
