@@ -110,6 +110,13 @@ const flavors = [
     description: "Savory soy garlic",
     rating: 4,
     image: "sample.jpg"
+  },
+  { 
+    name: "Teriyaki", 
+    category: "Unli Wings",
+    description: "Japanese-style teriyaki glaze",
+    rating: 4,
+    image: "sample.jpg"
   }
 ];
 
@@ -168,6 +175,13 @@ const menuItems = [
     category: "Beverages",
     price: "₱30.00",
     description: "Your choice of soda",
+    image: "sample.jpg"
+  },
+  { 
+    name: "Softdrinks 1.5L", 
+    category: "Beverages",
+    price: "₱99.00",
+    description: "1.5 liter bottle",
     image: "sample.jpg"
   },
   { 
