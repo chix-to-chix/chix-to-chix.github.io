@@ -17,30 +17,29 @@ const menu = [
   { name: "Soy Garlic", rating: 4 }
 ];
 
-const menuList = document.getElementById("menuList");
+const grid = document.querySelector('.flavors .grid');
+const search = document.getElementById('searchBar');
 
-function renderMenu(items) {
-  menuList.innerHTML = "";
-
-  items.forEach(item => {
-    const fullStars = "★".repeat(Math.floor(item.rating));
-    const halfStar = item.rating % 1 >= 0.5 ? "½" : "";
-    const chili = item.spice ? `<span class="spice-icons">${"🌶️".repeat(item.spice)}</span>` : "";
-
-    const html = `
-      <div class="menu-item">
-        <h3>${item.name} ${chili}</h3>
-        <div class="star-icons">${fullStars}${halfStar}</div>
-      </div>
+function renderFlavors(list) {
+  grid.innerHTML = '';
+  list.forEach(item => {
+    const fullStars = '★'.repeat(Math.floor(item.rating));
+    const halfStar = item.rating % 1 >= 0.5 ? '½' : '';
+    const chili = item.spice ? `<span class="spice-icons">${'🌶️'.repeat(item.spice)}</span>` : '';
+    const card = document.createElement('div');
+    card.className = 'flavor-card';
+    card.innerHTML = `
+      <h3>${item.name}${chili}</h3>
+      <div class="star-icons">${fullStars}${halfStar}</div>
     `;
-    menuList.innerHTML += html;
+    grid.append(card);
   });
 }
 
-document.getElementById("searchBar").addEventListener("input", (e) => {
-  const value = e.target.value.toLowerCase();
-  const filtered = menu.filter(item => item.name.toLowerCase().includes(value));
-  renderMenu(filtered);
+search.addEventListener('input', e => {
+  const term = e.target.value.toLowerCase();
+  renderFlavors(menu.filter(f => f.name.toLowerCase().includes(term)));
 });
 
-renderMenu(menu);
+// initial
+renderFlavors(menu);
