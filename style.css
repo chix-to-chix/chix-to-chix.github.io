@@ -355,6 +355,59 @@ h1 .highlight {
   background: var(--secondary);
 }
 
+.notification-toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: var(--primary);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  z-index: 10000;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.notification-toast.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.notification-toast.success {
+  background: #4CAF50;
+}
+
+.notification-toast.error {
+  background: #F44336;
+}
+
+.notification-toast i {
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.notification-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: rgba(255,255,255,0.5);
+  width: 100%;
+  border-radius: 0 0 10px 10px;
+}
+
+.notification-progress-bar {
+  height: 100%;
+  background: white;
+  border-radius: 0 0 0 10px;
+  width: 100%;
+  transition: width 0.1s linear;
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .app-container {
