@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chix To Chix - Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .stat-label {
+      color: var(--text-light);
+    }
+    
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    
+    .data-table th, .data-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .data-table th {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .data-table tr:nth-child(even) {
+      background: var(--bg);
+    }
+    
+    .date-filter {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .date-filter input {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+   </style>
+</head>
+<body>
+  <div class="texture-overlay"></div>
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1><i class="fas fa-chart-line"></i> Admin Dashboard</h1>
+      <button id="logoutBtn">Logout</button>
+    </div>
+    
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-value" id="todaySales">₱0</div>
+        <div class="stat-label">Today's Sales</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalTables">0</div>
+        <div class="stat-label">Tables Served</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="avgPax">0</div>
+        <div class="stat-label">Average Pax</div>
+      </div>
+    </div>
+    
+    <h2>Sales History</h2>
+    <div class="date-filter">
+      <input type="date" id="startDate">
+      <input type="date" id="endDate">
+      <button onclick="filterData()">Filter</button>
+    </div>
+    
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Table</th>
+          <th>Pax</th>
+          <th>Total Amount</th>
+          <th>Paid Amount</th>
+          <th>Change</th>
+        </tr>
+      </thead>
+      <tbody id="salesData">
+        <!-- Data will be populated by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+    // Check authentication
+    if (!localStorage.getItem('userRole') || localStorage.getItem('userRole') !== 'admin') {
+      window.location.href = 'https://chix-to-chix.github.io/chixlogin';
+    }
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCuZXC1J1R15kejNO7_4430qM2qkcdcxQE",
+      authDomain: "chix-to-chix.firebaseapp.com",
+      projectId: "chix-to-chix",
+      storageBucket: "chix-to-chix.appspot.com",
+      messagingSenderId: "913059913710",
+      appId: "1:913059913710:web:754b9101988c61de8478ff",
+      measurementId: "G-862F051QMV"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    const logoutBtn = document.getElementById('logoutBtn');
+    const salesData = document.getElementById('salesData');
+    const todaySales = document.getElementById('todaySales');
+    const totalTables = document.getElementById('totalTables');
+    const avgPax = document.getElementById('avgPax');
+
+    // Logout
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('userRole');
+      window.location.href = 'https://chix-to-chix.github.io/chixlogin';
+    });
+
+    // Set default dates
+    const today = new Date();
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(today.getDate() - 7);
+    
+    document.getElementById('startDate').valueAsDate = oneWeekAgo;
+    document.getElementById('endDate').valueAsDate = today;
+
+    // Load data
+    function filterData() {
+      const startDate = new Date(document.getElementById('startDate').value);
+      const endDate = new Date(document.getElementById('endDate').value);
+      
+      const completedBillsRef = ref(database, 'completedBills');
+      onValue(completedBillsRef, (snapshot) => {
+        const bills = snapshot.val();
+        salesData.innerHTML = '';
+        
+        let totalSales = 0;
+        let tableCount = 0;
+        let totalPax = 0;
+        let todayTotal = 0;
+        
+        if (bills) {
+          Object.entries(bills).forEach(([id, bill]) => {
+            const billDate = new Date(bill.timestamp);
+            
+            if (billDate >= startDate && billDate <= endDate) {
+              // Add to table
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${billDate.toLocaleDateString()}</td>
+                <td>${bill.tableNumber}</td>
+                <td>${bill.pax}</td>
+                <td>₱${bill.totalAmount?.toFixed(2) || '0.00'}</td>
+                <td>₱${bill.paidAmount?.toFixed(2) || '0.00'}</td>
+                <td>₱${(bill.paidAmount - bill.totalAmount)?.toFixed(2) || '0.00'}</td>
+              `;
+              salesData.appendChild(row);
+              
+              // Calculate stats
+              totalSales += bill.totalAmount || 0;
+              tableCount++;
+              totalPax += parseInt(bill.pax) || 0;
+              
+              // Check if today
+              if (billDate.toDateString() === today.toDateString()) {
+                todayTotal += bill.totalAmount || 0;
+              }
+            }
+          });
+        }
+        
+        // Update stats
+        todaySales.textContent = `₱${todayTotal.toFixed(2)}`;
+        totalTables.textContent = tableCount;
+        avgPax.textContent = tableCount > 0 ? Math.round(totalPax / tableCount) : 0;
+      });
+    }
+
+    // Initial load
+    filterData();
+  </script>
+</body>
+</html>
