@@ -1,4 +1,4 @@
-function showNotification(message, type = 'success', duration = 3000) {
+function showNotification(message, type = 'success', duration = 4000) {
   // Create notification element
   const notification = document.createElement('div');
   notification.className = `notification-toast ${type}`;
@@ -7,7 +7,7 @@ function showNotification(message, type = 'success', duration = 3000) {
   const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
   notification.innerHTML = `
     <i class="fas ${icon}"></i>
-    <span>${message}</span>
+    <span class="notification-message">${message}</span>
     <div class="notification-progress">
       <div class="notification-progress-bar"></div>
     </div>
@@ -33,6 +33,12 @@ function showNotification(message, type = 'success', duration = 3000) {
     notification.classList.remove('visible');
     setTimeout(() => notification.remove(), 300);
   }, duration);
+  
+  // Allow manual dismissal by tapping
+  notification.addEventListener('click', () => {
+    notification.classList.remove('visible');
+    setTimeout(() => notification.remove(), 300);
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
