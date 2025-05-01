@@ -108,182 +108,78 @@
   </div>
 
   <script type="module">
-    import { serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-    import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  
     const firebaseConfig = {
       apiKey: "AIzaSyCuZXC1J1R15kejNO7_4430qM2qkcdcxQE",
       authDomain: "chix-to-chix.firebaseapp.com",
+      databaseURL: "https://chix-to-chix-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "chix-to-chix",
       storageBucket: "chix-to-chix.appspot.com",
       messagingSenderId: "913059913710",
       appId: "1:913059913710:web:754b9101988c61de8478ff",
       measurementId: "G-862F051QMV"
     };
-
+  
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
     const auth = getAuth(app);
-
-    // Check authentication state
-    auth.onAuthStateChanged((user) => {
-      if (!user) {
-        window.location.href = 'https://chix-to-chix.github.io/chixlogin';
-      }
-    });
-
-    auth.onAuthStateChanged((user) => {
+  
+    // Authentication check
+    onAuthStateChanged(auth, (user) => {
       if (!user) {
         window.location.href = 'chixlogin.html';
       } else if (user.email && user.email.startsWith('admin')) {
-        // Admins shouldn't be on staff page - redirect to admin
         window.location.href = 'admin.html';
+      } else {
+        // Load requests when authenticated
+        loadRequests();
       }
-      // Staff users stay on the page
     });
-
-    // Logout
-    logoutBtn.addEventListener('click', () => {
-      signOut(auth).then(() => {
-        window.location.href = 'https://chix-to-chix.github.io/chixlogin';
-      });
-    });
-
-    // Listen for new requests
-    const requestsRef = ref(database, 'requests');
-    onValue(requestsRef, (snapshot) => {
-      const requests = snapshot.val();
-      requestsContainer.innerHTML = '';
-      
-      if (!requests) {
-        requestsContainer.innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-bell-slash"></i>
-            <p>No active requests</p>
-          </div>
-        `;
-        return;
-      }
-      
-      // Convert to array and sort by timestamp (newest first)
-      const requestsArray = Object.entries(requests).map(([id, request]) => ({ id, ...request }));
-      requestsArray.sort((a, b) => b.timestamp - a.timestamp);
-      
-      requestsArray.forEach(request => {
-        if (request.status === 'completed') return;
+  
+    function loadRequests() {
+      const requestsRef = ref(database, 'requests');
+      onValue(requestsRef, (snapshot) => {
+        const requests = snapshot.val();
+        const container = document.getElementById('requestsContainer');
+        container.innerHTML = '';
         
-        const requestCard = document.createElement('div');
-        requestCard.className = 'request-card';
-        requestCard.dataset.id = request.id;
-        
-        let actionText = '';
-        switch(request.action) {
-          case 'ready-to-order': actionText = 'Ready to Order'; break;
-          case 'need-assistance': actionText = 'Needs Assistance'; break;
-          case 'bill-out': actionText = 'Requesting Bill'; break;
+        if (!requests) {
+          container.innerHTML = '<div class="empty-state"><i class="fas fa-bell-slash"></i><p>No active requests</p></div>';
+          return;
         }
         
-        requestCard.innerHTML = `
-          <div class="request-info">
-            <h3>Table ${request.tableNumber} - ${actionText}</h3>
-            <p>${new Date(request.timestamp).toLocaleString()}</p>
-          </div>
-          <div class="request-actions">
-            <button class="btn-accept" onclick="handleRequest('${request.id}', 'accept')">Accept</button>
-          </div>
-          <div class="bill-form" id="form-${request.id}">
-            ${request.action === 'bill-out' ? `
-              <h4>Bill Details</h4>
-              <div id="orderItems-${request.id}">
-                <div class="order-item">
-                  <select class="order-select">
-                    <option value="">Select Item</option>
-                    <!-- Items will be populated by JavaScript -->
-                  </select>
-                  <input type="number" min="1" value="1" class="order-qty" placeholder="Qty">
-                  <button onclick="addOrderItem('${request.id}')">+</button>
-                </div>
+        Object.entries(requests).forEach(([id, request]) => {
+          if (request.status !== 'completed') {
+            const card = document.createElement('div');
+            card.className = 'request-card';
+            card.innerHTML = `
+              <div class="request-info">
+                <h3>Table ${request.tableNumber} - ${request.action.replace('-', ' ')}</h3>
+                <p>${new Date(request.timestamp).toLocaleString()}</p>
               </div>
-              <input type="number" id="pax-${request.id}" placeholder="Pax" min="1">
-              <input type="number" id="paidAmount-${request.id}" placeholder="Paid Amount" min="0" step="0.01">
-              <input type="text" id="totalAmount-${request.id}" placeholder="Total Amount" readonly>
-              <input type="text" id="change-${request.id}" placeholder="Change" readonly>
-              <button class="btn-complete" onclick="completeBill('${request.id}')">Complete Bill</button>
-            ` : `
-              <button class="btn-complete" onclick="completeRequest('${request.id}')">Mark as Completed</button>
-            `}
-          </div>
-        `;
-        
-        requestsContainer.appendChild(requestCard);
-        
-        // Play notification sound for new requests
-        if (!request.handled) {
-          notificationSound.play();
-          update(ref(database, `requests/${request.id}`), { handled: true });
-        }
-      });
-    });
-
-    // Handle request actions
-    window.handleRequest = function(requestId, action) {
-      if (action === 'accept') {
-        document.getElementById(`form-${requestId}`).style.display = 'block';
-      }
-    }
-
-    window.completeRequest = function(requestId) {
-      update(ref(database, `requests/${requestId}`), {
-        status: 'completed'
-      });
-    }
-
-    window.addOrderItem = function(requestId) {
-      const orderItems = document.getElementById(`orderItems-${requestId}`);
-      const newItem = document.createElement('div');
-      newItem.className = 'order-item';
-      newItem.innerHTML = `
-        <select class="order-select">
-          <option value="">Select Item</option>
-          <!-- Items will be populated by JavaScript -->
-        </select>
-        <input type="number" min="1" value="1" class="order-qty" placeholder="Qty">
-        <button onclick="this.parentElement.remove()">-</button>
-      `;
-      orderItems.appendChild(newItem);
-    }
-
-    window.completeBill = function(requestId) {
-      const tableNumber = document.querySelector(`[data-id="${requestId}"] h3`).textContent.match(/Table (\d+)/)[1];
-      const pax = document.getElementById(`pax-${requestId}`).value;
-      const paidAmount = parseFloat(document.getElementById(`paidAmount-${requestId}`).value);
-      const totalAmount = parseFloat(document.getElementById(`totalAmount-${requestId}`).value);
-      
-      if (!pax || isNaN(paidAmount)) {
-        alert('Please fill all fields');
-        return;
-      }
-      
-      // Save to completed bills
-      const completedBillsRef = ref(database, 'completedBills');
-      const newBillRef = push(completedBillsRef);
-      
-      set(newBillRef, {
-        tableNumber,
-        pax,
-        totalAmount,
-        paidAmount,
-        change: paidAmount - totalAmount,
-        timestamp: serverTimestamp()
-      }).then(() => {
-        // Mark request as completed
-        update(ref(database, `requests/${requestId}`), {
-          status: 'completed'
+              <div class="request-actions">
+                <button class="btn-complete" onclick="markCompleted('${id}')">Complete</button>
+              </div>
+            `;
+            container.appendChild(card);
+          }
         });
       });
     }
+  
+    window.markCompleted = function(id) {
+      update(ref(database, `requests/${id}`), { status: 'completed' });
+    };
+  
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      signOut(auth).then(() => {
+        window.location.href = 'chixlogin.html';
+      });
+    });
   </script>
   <script src="script.js"></script>
 </body>
