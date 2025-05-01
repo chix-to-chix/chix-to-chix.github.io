@@ -154,11 +154,15 @@
     });
 
     // Login with admin credentials
-    signInWithEmailAndPassword(auth, "admin@chix.com", "yourAdminPassword")
-      .catch((error) => {
-        console.error("Admin login failed:", error);
-        window.location.href = 'https://chix-to-chix.github.io/chixlogin';
-      });
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        window.location.href = 'chixlogin.html';
+      } else if (user.email && !user.email.startsWith('admin')) {
+        // Non-admins shouldn't be here - redirect to staff
+        window.location.href = 'staff.html';
+      }
+      // Admin users stay on the page
+    });
 
     // Logout
     logoutBtn.addEventListener('click', () => {
