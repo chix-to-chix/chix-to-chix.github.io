@@ -107,29 +107,27 @@
     <audio class="notification-sound" src="notification.mp3" preload="auto"></audio>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-  
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getDatabase, ref, onValue, update, remove, push, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
     // Check authentication
     if (!localStorage.getItem('userRole') || localStorage.getItem('userRole') !== 'staff') {
       window.location.href = 'https://chix-to-chix.github.io/chixlogin';
     }
 
-    // Firebase configuration
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      databaseURL: "YOUR_DATABASE_URL",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyCuZXC1J1R15kejNO7_4430qM2qkcdcxQE",
+      authDomain: "chix-to-chix.firebaseapp.com",
+      projectId: "chix-to-chix",
+      storageBucket: "chix-to-chix.appspot.com",
+      messagingSenderId: "913059913710",
+      appId: "1:913059913710:web:754b9101988c61de8478ff",
+      measurementId: "G-862F051QMV"
     };
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
 
     const requestsContainer = document.getElementById('requestsContainer');
     const notificationSound = document.querySelector('.notification-sound');
@@ -142,7 +140,8 @@
     });
 
     // Listen for new requests
-    database.ref('requests').orderByChild('timestamp').on('value', (snapshot) => {
+    const requestsRef = ref(database, 'requests');
+    onValue(requestsRef, (snapshot) => {
       const requests = snapshot.val();
       requestsContainer.innerHTML = '';
       
@@ -211,25 +210,25 @@
         // Play notification sound for new requests
         if (!request.handled) {
           notificationSound.play();
-          database.ref(`requests/${request.id}`).update({ handled: true });
+          update(ref(database, `requests/${request.id}`), { handled: true });
         }
       });
     });
 
     // Handle request actions
-    function handleRequest(requestId, action) {
+    window.handleRequest = function(requestId, action) {
       if (action === 'accept') {
         document.getElementById(`form-${requestId}`).style.display = 'block';
       }
     }
 
-    function completeRequest(requestId) {
-      database.ref(`requests/${requestId}`).update({
+    window.completeRequest = function(requestId) {
+      update(ref(database, `requests/${requestId}`), {
         status: 'completed'
       });
     }
 
-    function addOrderItem(requestId) {
+    window.addOrderItem = function(requestId) {
       const orderItems = document.getElementById(`orderItems-${requestId}`);
       const newItem = document.createElement('div');
       newItem.className = 'order-item';
@@ -244,28 +243,31 @@
       orderItems.appendChild(newItem);
     }
 
-    function completeBill(requestId) {
+    window.completeBill = function(requestId) {
       const tableNumber = document.querySelector(`[data-id="${requestId}"] h3`).textContent.match(/Table (\d+)/)[1];
       const pax = document.getElementById(`pax-${requestId}`).value;
       const paidAmount = parseFloat(document.getElementById(`paidAmount-${requestId}`).value);
       const totalAmount = parseFloat(document.getElementById(`totalAmount-${requestId}`).value);
       
-      if (!pax || isNaN(paidAmount) {
+      if (!pax || isNaN(paidAmount)) {
         alert('Please fill all fields');
         return;
       }
       
       // Save to completed bills
-      database.ref('completedBills').push().set({
+      const completedBillsRef = ref(database, 'completedBills');
+      const newBillRef = push(completedBillsRef);
+      
+      set(newBillRef, {
         tableNumber,
         pax,
         totalAmount,
         paidAmount,
         change: paidAmount - totalAmount,
-        timestamp: firebase.database.ServerValue.TIMESTAMP
+        timestamp: serverTimestamp()
       }).then(() => {
         // Mark request as completed
-        database.ref(`requests/${requestId}`).update({
+        update(ref(database, `requests/${requestId}`), {
           status: 'completed'
         });
       });
