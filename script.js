@@ -240,6 +240,7 @@ function renderMenu(items, category = "all") {
   
   if (category === "Unli Wings") {
     priceHeader.style.display = "block";
+    priceHeader.style.margin = "1.5rem auto";
   } else {
     priceHeader.style.display = "none";
   }
