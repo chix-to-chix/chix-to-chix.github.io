@@ -109,13 +109,8 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getDatabase, ref, push, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
-    
-    // Check authentication
-    if (!localStorage.getItem('userRole') || localStorage.getItem('userRole') !== 'staff') {
-      window.location.href = 'https://chix-to-chix.github.io/chixlogin';
-    }
+    import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCuZXC1J1R15kejNO7_4430qM2qkcdcxQE",
@@ -126,19 +121,30 @@
       appId: "1:913059913710:web:754b9101988c61de8478ff",
       measurementId: "G-862F051QMV"
     };
-  
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const database = getDatabase(app);
 
-    const requestsContainer = document.getElementById('requestsContainer');
-    const notificationSound = document.querySelector('.notification-sound');
-    const logoutBtn = document.getElementById('logoutBtn');
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
+
+    // Check authentication state
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        window.location.href = 'https://chix-to-chix.github.io/chixlogin';
+      }
+    });
+
+    // Login with staff credentials
+    signInWithEmailAndPassword(auth, "staff@chix.com", "yourSecurePassword")
+      .catch((error) => {
+        console.error("Staff login failed:", error);
+        window.location.href = 'https://chix-to-chix.github.io/chixlogin';
+      });
 
     // Logout
     logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('userRole');
-      window.location.href = 'https://chix-to-chix.github.io/chixlogin';
+      signOut(auth).then(() => {
+        window.location.href = 'https://chix-to-chix.github.io/chixlogin';
+      });
     });
 
     // Listen for new requests
