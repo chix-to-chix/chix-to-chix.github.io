@@ -1,3 +1,40 @@
+function showNotification(message, type = 'success', duration = 3000) {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = `notification-toast ${type}`;
+  
+  // Add icon based on type
+  const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+  notification.innerHTML = `
+    <i class="fas ${icon}"></i>
+    <span>${message}</span>
+    <div class="notification-progress">
+      <div class="notification-progress-bar"></div>
+    </div>
+  `;
+  
+  // Add to DOM
+  document.body.appendChild(notification);
+  
+  // Trigger animation
+  setTimeout(() => {
+    notification.classList.add('visible');
+    
+    // Animate progress bar
+    const progressBar = notification.querySelector('.notification-progress-bar');
+    progressBar.style.width = '0%';
+    progressBar.style.transition = `width ${duration}ms linear`;
+    setTimeout(() => progressBar.style.width = '0%', 50);
+    
+  }, 50);
+  
+  // Remove after duration
+  setTimeout(() => {
+    notification.classList.remove('visible');
+    setTimeout(() => notification.remove(), 300);
+  }, duration);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   // Initialize Firebase (same config as before)
   const firebaseConfig = {
@@ -65,11 +102,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Reset form
                 modal.style.display = 'none';
                 document.getElementById('tableNumber').value = '';
-                alert(`Request sent for table ${tableNumber}`);
+                showNotification(`Table #${tableNumber} request sent!`, 'success', 4000);
               })
               .catch(error => {
                 console.error("Error:", error);
-                alert("Failed to send request. Please try again.");
+                showNotification("Failed to send request. Please try again.", 'error', 4000);
               });
           }
         };
