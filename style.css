@@ -210,6 +210,29 @@ h1 .highlight {
   font-weight: 700;
 }
 
+.unli-price-header {
+  text-align: center;
+  margin: 1.5rem auto; 
+  font-size: 1.4rem;
+  color: var(--primary);
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 1rem;
+  width: fit-content;
+}
+
+.unli-price-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%); 
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(to right, var(--primary), var(--accent), var(--primary));
+  border-radius: 3px;
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .app-container {
@@ -227,6 +250,14 @@ h1 .highlight {
   
   .menu-card img {
     height: 120px;
+  }
+  .unli-price-header {
+    font-size: 1.2rem;
+    margin: 1rem auto;
+  }
+  
+  .unli-price-header::after {
+    width: 80px;
   }
 }
 
