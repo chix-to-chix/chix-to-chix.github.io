@@ -32,6 +32,12 @@
       border-radius: 10px;
       padding: 1.5rem;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .request-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
     }
     
     .request-info {
@@ -122,67 +128,104 @@
       appId: "1:913059913710:web:754b9101988c61de8478ff",
       measurementId: "G-862F051QMV"
     };
-  
-    try {
-      const app = initializeApp(firebaseConfig);
-      const database = getDatabase(app);
-      const auth = getAuth(app);
-  
-      onAuthStateChanged(auth, (user) => {
-        if (!user) {
-          window.location.href = 'chixlogin.html';
-        } else if (user.email && user.email.startsWith('admin')) {
-          window.location.href = 'admin.html';
-        } else {
-          loadRequests();
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
+
+    // Authentication state handler
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // No user signed in - redirect to login
+        window.location.href = 'chixlogin.html';
+      } else if (user.email && user.email.startsWith('admin')) {
+        // Admin trying to access staff page - redirect
+        window.location.href = 'admin.html';
+      } else {
+        // Staff user - load requests
+        loadRequests();
+      }
+    });
+
+    // Load and display requests
+    function loadRequests() {
+      const requestsRef = ref(database, 'requests');
+      const notificationSound = document.querySelector('.notification-sound');
+      let firstLoad = true;
+      
+      onValue(requestsRef, (snapshot) => {
+        const requests = snapshot.val();
+        const container = document.getElementById('requestsContainer');
+        
+        // Clear existing requests
+        container.innerHTML = '';
+        
+        if (!requests) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-bell-slash"></i>
+              <p>No active requests</p>
+            </div>
+          `;
+          return;
         }
-      });
-  
-      function loadRequests() {
-        const requestsRef = ref(database, 'requests');
-        onValue(requestsRef, (snapshot) => {
-          const requests = snapshot.val();
-          const container = document.getElementById('requestsContainer');
-          container.innerHTML = '';
+        
+        // Convert to array and filter completed requests
+        const activeRequests = Object.entries(requests)
+          .filter(([_, request]) => request.status !== 'completed')
+          .sort((a, b) => b[1].timestamp - a[1].timestamp);
+        
+        if (activeRequests.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-bell-slash"></i>
+              <p>No active requests</p>
+            </div>
+          `;
+          return;
+        }
+        
+        // Add each request to the container
+        activeRequests.forEach(([id, request]) => {
+          const card = document.createElement('div');
+          card.className = 'request-card';
+          card.innerHTML = `
+            <div class="request-info">
+              <h3>Table ${request.tableNumber} - ${request.action.replace('-', ' ')}</h3>
+              <p>${new Date(request.timestamp).toLocaleString()}</p>
+            </div>
+            <div class="request-actions">
+              <button class="btn-complete" data-id="${id}">Complete</button>
+            </div>
+          `;
+          container.appendChild(card);
           
-          if (!requests) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-bell-slash"></i><p>No active requests</p></div>';
-            return;
+          // Play sound for new requests (except on first load)
+          if (!firstLoad && !request.handled) {
+            notificationSound.play();
+            update(ref(database, `requests/${id}`), { handled: true });
           }
-          
-          Object.entries(requests).forEach(([id, request]) => {
-            if (request.status !== 'completed') {
-              const card = document.createElement('div');
-              card.className = 'request-card';
-              card.innerHTML = `
-                <div class="request-info">
-                  <h3>Table ${request.tableNumber} - ${request.action.replace('-', ' ')}</h3>
-                  <p>${new Date(request.timestamp).toLocaleString()}</p>
-                </div>
-                <div class="request-actions">
-                  <button class="btn-complete" onclick="markCompleted('${id}')">Complete</button>
-                </div>
-              `;
-              container.appendChild(card);
-            }
+        });
+        
+        firstLoad = false;
+        
+        // Add event listeners to complete buttons
+        document.querySelectorAll('.btn-complete').forEach(button => {
+          button.addEventListener('click', () => {
+            const requestId = button.dataset.id;
+            update(ref(database, `requests/${requestId}`), { status: 'completed' });
           });
         });
-      }
-  
-      window.markCompleted = function(id) {
-        update(ref(database, `requests/${id}`), { status: 'completed' });
-      };
-  
-      document.getElementById('logoutBtn').addEventListener('click', () => {
-        signOut(auth).then(() => {
-          window.location.href = 'chixlogin.html';
-        });
       });
-  
-    } catch (error) {
-      console.error("Firebase initialization failed:", error);
-      alert("Failed to initialize app. Please refresh the page.");
     }
+
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      signOut(auth).then(() => {
+        window.location.href = 'chixlogin.html';
+      });
+    });
   </script>
   <script src="script.js"></script>
 </body>
