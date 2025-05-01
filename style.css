@@ -233,6 +233,121 @@ h1 .highlight {
   border-radius: 3px;
 }
 
+/* Notification Bell */
+.notification-bell {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  font-size: 1.5rem;
+  color: var(--primary);
+  cursor: pointer;
+  z-index: 1000;
+  background: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.notification-bell:hover {
+  transform: scale(1.1);
+}
+
+.notification-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background: white;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  width: 180px;
+  overflow: hidden;
+  display: none;
+}
+
+.notification-item {
+  padding: 12px 15px;
+  transition: var(--transition);
+}
+
+.notification-item:hover {
+  background: var(--bg);
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1001;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background: white;
+  margin: 15% auto;
+  padding: 25px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+}
+
+.close-modal {
+  position: absolute;
+  right: 20px;
+  top: 15px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+#tableNumber {
+  width: 100%;
+  padding: 12px;
+  margin: 15px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+#submitTable {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  width: 100%;
+  transition: var(--transition);
+}
+
+#submitTable:hover {
+  background: var(--secondary);
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .app-container {
@@ -291,5 +406,19 @@ h1 .highlight {
   .category-tabs button {
     padding: 0.7rem 1rem;
     font-size: 0.8rem;
+  }
+
+  .notification-bell {
+    width: 45px;
+    height: 45px;
+    font-size: 1.3rem;
+  }
+  
+  .notification-dropdown {
+    width: 160px;
+  }
+  
+  .modal-content {
+    padding: 20px;
   }
 }
