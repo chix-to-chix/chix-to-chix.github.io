@@ -148,20 +148,19 @@
       }
     });
 
-    // Load and display requests
+    const displayedRequests = new Set();
+
     function loadRequests() {
       const requestsRef = ref(database, 'requests');
       const notificationSound = document.querySelector('.notification-sound');
-      let firstLoad = true;
-      let currentRequests = new Set(); // Track displayed requests
-      
+      const container = document.getElementById('requestsContainer');
+    
       onValue(requestsRef, (snapshot) => {
         const requests = snapshot.val();
-        const container = document.getElementById('requestsContainer');
         
-        // Clear existing requests
-        container.innerHTML = '';
-        currentRequests.clear();
+        // Create a temporary container to build the new state
+        const fragment = document.createDocumentFragment();
+        const currentRequestIds = new Set();
         
         if (!requests) {
           container.innerHTML = `
@@ -170,17 +169,15 @@
               <p>No active requests</p>
             </div>
           `;
+          displayedRequests.clear();
           return;
         }
-        
+    
         // Convert to array and filter completed requests
         const activeRequests = Object.entries(requests)
-          .filter(([id, request]) => {
-            // Only show if not completed and not already displayed
-            return request.status !== 'completed' && !currentRequests.has(id);
-          })
+          .filter(([_, request]) => request.status !== 'completed')
           .sort((a, b) => b[1].timestamp - a[1].timestamp);
-        
+    
         if (activeRequests.length === 0) {
           container.innerHTML = `
             <div class="empty-state">
@@ -188,42 +185,65 @@
               <p>No active requests</p>
             </div>
           `;
+          displayedRequests.clear();
           return;
         }
-        
-        // Add each request to the container
+    
+        // Process each request
         activeRequests.forEach(([id, request]) => {
-          currentRequests.add(id); // Mark this request as displayed
+          currentRequestIds.add(id);
           
-          const card = document.createElement('div');
-          card.className = 'request-card';
-          card.innerHTML = `
-            <div class="request-info">
-              <h3>Table ${request.tableNumber} - ${formatAction(request.action)}</h3>
-              <p>${new Date(request.timestamp).toLocaleString()}</p>
-            </div>
-            <div class="request-actions">
-              <button class="btn-complete" data-id="${id}">Complete</button>
-            </div>
-          `;
-          container.appendChild(card);
-          
-          // Play sound for new requests (except on first load)
-          if (!firstLoad && !request.handled) {
-            notificationSound.play();
-            update(ref(database, `requests/${id}`), { handled: true });
+          // Only create new card if this request wasn't already displayed
+          if (!displayedRequests.has(id)) {
+            const card = document.createElement('div');
+            card.className = 'request-card';
+            card.id = `request-${id}`; // Unique ID for each card
+            card.innerHTML = `
+              <div class="request-info">
+                <h3>Table ${request.tableNumber} - ${formatAction(request.action)}</h3>
+                <p>${new Date(request.timestamp).toLocaleString()}</p>
+              </div>
+              <div class="request-actions">
+                <button class="btn-complete" data-id="${id}">Complete</button>
+              </div>
+            `;
+            fragment.appendChild(card);
+            displayedRequests.add(id);
+    
+            // Play sound for new requests
+            if (!request.handled) {
+              notificationSound.play();
+              update(ref(database, `requests/${id}`), { handled: true });
+            }
           }
         });
-        
-        firstLoad = false;
-        
+    
+        // Remove any cards that are no longer in active requests
+        displayedRequests.forEach(id => {
+          if (!currentRequestIds.has(id)) {
+            displayedRequests.delete(id);
+            const cardToRemove = document.getElementById(`request-${id}`);
+            if (cardToRemove) {
+              cardToRemove.remove();
+            }
+          }
+        });
+    
+        // Only update DOM if there are new cards to add
+        if (fragment.hasChildNodes()) {
+          container.prepend(fragment);
+        }
+    
         // Add event listeners to complete buttons
         document.querySelectorAll('.btn-complete').forEach(button => {
-          button.addEventListener('click', () => {
+          button.addEventListener('click', (e) => {
+            e.stopPropagation();
             const requestId = button.dataset.id;
             update(ref(database, `requests/${requestId}`), { 
               status: 'completed',
               completedAt: Date.now() 
+            }).then(() => {
+              displayedRequests.delete(requestId);
             });
           });
         });
