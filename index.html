@@ -78,7 +78,7 @@
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getDatabase, ref, push, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { getDatabase, ref, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
   
     const firebaseConfig = {
@@ -102,17 +102,34 @@
     });
   
     document.addEventListener('DOMContentLoaded', () => {
+      const bell = document.querySelector('.notification-bell');
+      const dropdown = document.querySelector('.notification-dropdown');
       const modal = document.getElementById('tableModal');
       const closeModal = document.querySelector('.close-modal');
       const submitTable = document.getElementById('submitTable');
       const tableNumberInput = document.getElementById('tableNumber');
   
+      // Toggle dropdown when bell is clicked
+      bell.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent event bubbling
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+      });
+  
+      // Close dropdown when clicking elsewhere
+      document.addEventListener('click', (e) => {
+        if (!bell.contains(e.target) && !dropdown.contains(e.target)) {
+          dropdown.style.display = 'none';
+        }
+      });
+  
       // Notification items
       document.querySelectorAll('.notification-item').forEach(item => {
         item.addEventListener('click', (e) => {
+          e.stopPropagation();
           const action = item.dataset.action;
           document.getElementById('modalTitle').textContent = `Table Number (${item.textContent})`;
           modal.style.display = 'block';
+          dropdown.style.display = 'none';
           
           submitTable.onclick = () => {
             const tableNumber = tableNumberInput.value;
