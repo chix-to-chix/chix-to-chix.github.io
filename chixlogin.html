@@ -8,7 +8,72 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Your existing CSS remains unchanged */
+    .login-container {
+      max-width: 400px;
+      margin: 5rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    
+    .login-logo {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 1.5rem;
+    }
+    
+    .login-title {
+      color: var(--primary);
+      margin-bottom: 2rem;
+    }
+    
+    .login-input {
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    
+    .login-button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      width: 100%;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .login-button:hover {
+      background: var(--secondary);
+    }
+    
+    .user-type {
+      display: flex;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+    
+    .user-type button {
+      background: none;
+      border: none;
+      padding: 8px 15px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+    
+    .user-type button.active {
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
+    }
   </style>
 </head>
 <body>
