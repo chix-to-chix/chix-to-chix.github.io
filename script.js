@@ -50,12 +50,20 @@ export function initializeCustomerMenu() {
     
     if (category === "Unli Wings") {
       priceHeader.style.display = "block";
-      priceHeader.innerHTML = `Unlimited Wings - ₱${unliPrice.toFixed(2)}`;
+      priceHeader.textContent = `Unlimited Wings - ₱${unliPrice.toFixed(2)}`;
+      
+      // Show only flavor cards for Unli Wings
+      flavors.forEach(flavor => {
+        const card = createCard(flavor);
+        menuList.appendChild(card);
+      });
+      return;
     } else {
       priceHeader.style.display = "none";
     }
 
     if (category === "all") {
+      // Show the Unli Wings summary card first
       const unliCard = document.createElement("div");
       unliCard.className = "menu-card";
       unliCard.innerHTML = `
@@ -70,45 +78,50 @@ export function initializeCustomerMenu() {
       `;
       menuList.appendChild(unliCard);
       
+      // Then show all other menu items grouped by category
       const categories = {};
-      items.forEach(item => {
+      allItems.forEach(item => {
         if (!categories[item.category]) {
           categories[item.category] = [];
         }
         categories[item.category].push(item);
       });
       
-      Object.entries(categories).forEach(([cat, catItems]) => {
-        catItems.forEach(item => {
+      // Add a section for each category
+      Object.entries(categories).forEach(([categoryName, categoryItems]) => {
+        // Add category header
+        const categoryHeader = document.createElement("h2");
+        categoryHeader.className = "category-header";
+        categoryHeader.textContent = `${categoryName}`;
+        menuList.appendChild(categoryHeader);
+        
+        // Add items for this category
+        categoryItems.forEach(item => {
           const card = createCard(item);
           menuList.appendChild(card);
         });
       });
-    } 
-    else if (category === "Unli Wings") {
-      flavors.forEach(item => {
-        const card = createCard(item);
-        menuList.appendChild(card);
-      });
-    }
-    else {
-      items.forEach(item => {
+    } else {
+      // Show only items from the selected category
+      const filteredItems = allItems.filter(item => item.category === category);
+      filteredItems.forEach(item => {
         const card = createCard(item);
         menuList.appendChild(card);
       });
     }
   }
 
+  // Rest of your code remains the same...
   function createCard(item) {
     const card = document.createElement("div");
     card.className = "menu-card";
     
     const priceOrRating = item.rating 
       ? `<div class="rating">${"★".repeat(Math.floor(item.rating))}${item.rating % 1 >= 0.5 ? "½" : ""}</div>`
-      : `<span class="price">₱${item.price.toFixed(2)}</span>`;
+      : `<span class="price">${item.price}</span>`;
     
     card.innerHTML = `
-      <img src="img/${item.image}" alt="${item.name}" />
+      <img src="img/${item.image || 'sample.jpg'}" alt="${item.name}" />
       <div class="content">
         <h3>${item.name}</h3>
         <p>${item.description}</p>
@@ -121,8 +134,10 @@ export function initializeCustomerMenu() {
     return card;
   }
 
+  // Initialize with all items
   renderMenu(allItems);
 
+  // Rest of your event listeners remain the same...
   searchBar.addEventListener("input", (e) => {
     const value = e.target.value.toLowerCase();
     const currentCategory = document.querySelector(".category-tabs button.active").dataset.category;
@@ -134,9 +149,9 @@ export function initializeCustomerMenu() {
       );
       renderMenu(filtered);
     } else if (currentCategory === "Unli Wings") {
-      const filtered = flavors.filter(item => 
-        item.name.toLowerCase().includes(value) || 
-        item.description.toLowerCase().includes(value)
+      const filtered = flavors.filter(flavor => 
+        flavor.name.toLowerCase().includes(value) || 
+        flavor.description.toLowerCase().includes(value)
       );
       renderMenu(filtered, "Unli Wings");
     } else {
