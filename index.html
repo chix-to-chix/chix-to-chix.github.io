@@ -79,7 +79,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getDatabase, ref, push, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+  
     const firebaseConfig = {
       apiKey: "AIzaSyCuZXC1J1R15kejNO7_4430qM2qkcdcxQE",
       authDomain: "chix-to-chix.firebaseapp.com",
@@ -89,8 +90,9 @@
       appId: "1:913059913710:web:754b9101988c61de8478ff",
       measurementId: "G-862F051QMV"
     };
-
+  
     const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
     const database = getDatabase(app);
 
     // Notification System
