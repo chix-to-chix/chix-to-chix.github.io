@@ -127,41 +127,36 @@
     </table>
   </div>
 
-<script type="module">
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-    import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  
     const firebaseConfig = {
       apiKey: "AIzaSyCuZXC1J1R15kejNO7_4430qM2qkcdcxQE",
       authDomain: "chix-to-chix.firebaseapp.com",
+      databaseURL: "https://chix-to-chix-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "chix-to-chix",
       storageBucket: "chix-to-chix.appspot.com",
       messagingSenderId: "913059913710",
       appId: "1:913059913710:web:754b9101988c61de8478ff",
       measurementId: "G-862F051QMV"
     };
-
+  
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
     const auth = getAuth(app);
-
-    // Check authentication state
-    auth.onAuthStateChanged((user) => {
-      if (!user) {
-        window.location.href = 'https://chix-to-chix.github.io/chixlogin';
-      }
-    });
-
-    // Login with admin credentials
-    auth.onAuthStateChanged((user) => {
+  
+    // Authentication check
+    onAuthStateChanged(auth, (user) => {
       if (!user) {
         window.location.href = 'chixlogin.html';
       } else if (user.email && !user.email.startsWith('admin')) {
-        // Non-admins shouldn't be here - redirect to staff
         window.location.href = 'staff.html';
+      } else {
+        // Load data when authenticated
+        filterData();
       }
-      // Admin users stay on the page
     });
 
     // Logout
