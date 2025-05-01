@@ -286,6 +286,7 @@ h1 .highlight {
 
 .notification-item {
   padding: 12px 16px;
+  font-size: 2rem;
   cursor: pointer;
   transition: var(--transition);
 }
