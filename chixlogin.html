@@ -80,14 +80,8 @@
   <div class="texture-overlay"></div>
   <div class="login-container">
     <img src="img/logo.png" alt="Chix To Chix Logo" class="login-logo">
-    <h2 class="login-title">Staff Login</h2>
-    
-    <div class="user-type">
-      <button class="active" id="staffBtn">Staff</button>
-      <button id="adminBtn">Admin</button>
-    </div>
-    
-    <input type="text" id="username" class="login-input" placeholder="Username">
+    <h2 class="login-title">Chix To Chix Login</h2>
+    <input type="text" id="username" class="login-input" placeholder="Username (e.g., staffjuvy, adminlester)">
     <input type="password" id="password" class="login-input" placeholder="Password">
     <button class="login-button" id="loginBtn">Login</button>
   </div>
@@ -114,23 +108,9 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Predefined credentials (for reference - Firebase handles actual auth)
-    const STAFF_ACCOUNTS = {
-      "staffjuvy@chix.com": "juvy123",
-      "staffelvie@chix.com": "elvie123"
-    };
-
-    const ADMIN_ACCOUNTS = {
-      "adminlester@chix.com": "saltedegg",
-      "adminivy@chix.com": "lemonglazed",
-      "adminleslie@chix.com": "spicemaple",
-      "adminalbert@chix.com": "teriyaki"
-    };
-
     document.getElementById('loginBtn').addEventListener('click', async function() {
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
-      const isAdmin = document.getElementById('adminBtn').classList.contains('active');
       
       if (!username || !password) {
         alert('Please enter both username and password');
@@ -145,8 +125,8 @@
         
         await signInWithEmailAndPassword(auth, email, password);
         
-        // Successful login - redirect based on role
-        if (isAdmin) {
+        // Auto-detect role from username
+        if (username.toLowerCase().startsWith('admin')) {
           window.location.href = 'admin.html';
         } else {
           window.location.href = 'staff.html';
@@ -154,7 +134,6 @@
       } catch (error) {
         console.error('Login error:', error);
         
-        // User-friendly error messages
         if (error.code === 'auth/user-not-found') {
           alert('Account not found. Please check your username.');
         } else if (error.code === 'auth/wrong-password') {
@@ -163,17 +142,6 @@
           alert(`Login failed: ${error.message}`);
         }
       }
-    });
-
-    // Toggle between Staff/Admin login modes
-    document.getElementById('staffBtn').addEventListener('click', function() {
-      this.classList.add('active');
-      document.getElementById('adminBtn').classList.remove('active');
-    });
-    
-    document.getElementById('adminBtn').addEventListener('click', function() {
-      this.classList.add('active');
-      document.getElementById('staffBtn').classList.remove('active');
     });
   </script>
 </body>
