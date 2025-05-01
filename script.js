@@ -45,7 +45,7 @@ export function initializeCustomerMenu() {
   const categoryButtons = document.querySelectorAll(".category-tabs button");
   const priceHeader = document.querySelector(".unli-price-header");
 
- function renderMenu(items, category = "all") {
+  function renderMenu(items, category = "all") {
     menuList.innerHTML = "";
     
     if (category === "Unli Wings") {
@@ -61,7 +61,7 @@ export function initializeCustomerMenu() {
     } else {
       priceHeader.style.display = "none";
     }
-  
+
     if (category === "all") {
       // Show the Unli Wings summary card first
       const unliCard = document.createElement("div");
@@ -78,10 +78,28 @@ export function initializeCustomerMenu() {
       `;
       menuList.appendChild(unliCard);
       
-      // Show all other menu items without category headers
+      // Then show all other menu items grouped by category
+      const categories = {};
       allItems.forEach(item => {
-        const card = createCard(item);
-        menuList.appendChild(card);
+        if (!categories[item.category]) {
+          categories[item.category] = [];
+        }
+        categories[item.category].push(item);
+      });
+      
+      // Add a section for each category
+      Object.entries(categories).forEach(([categoryName, categoryItems]) => {
+        // Add category header
+        const categoryHeader = document.createElement("h2");
+        categoryHeader.className = "category-header";
+        categoryHeader.textContent = `${categoryName}`;
+        menuList.appendChild(categoryHeader);
+        
+        // Add items for this category
+        categoryItems.forEach(item => {
+          const card = createCard(item);
+          menuList.appendChild(card);
+        });
       });
     } else {
       // Show only items from the selected category
