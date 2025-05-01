@@ -303,6 +303,7 @@
       border-radius: 6px;
       font-family: 'Poppins', sans-serif;
       box-sizing: border-box;
+      margin-bottom: 1rem;
     }
 
     .form-control:disabled {
@@ -317,10 +318,11 @@
       max-height: 200px;
       overflow-y: auto;
       background-color: var(--bg-light);
+      margin-bottom: 1rem;
     }
 
     .order-items-section {
-      margin: 1rem 0;
+      margin-bottom: 1.5rem;
     }
   
     .order-items-label {
@@ -397,6 +399,13 @@
       cursor: pointer;
       font-size: 1rem;
       padding: 0.5rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text);
     }
     
     @keyframes modalFadeIn {
@@ -497,21 +506,20 @@
       </div>
       <div class="modal-body">
         <form class="bill-out-form" id="billOutForm">
-          <div class="form-group">
-            <label for="pax">Pax</label>
-            <input type="number" id="pax" class="form-control" min="1" required>
-          </div>
-  
           <div class="order-items-section">
-            <label class="order-items-label">Order Items</label>
+            <label class="form-label">Order/s</label>
             <div class="order-items" id="orderItemsContainer">
               <!-- Order items will be added here -->
             </div>
+            <button type="button" class="add-order-btn" id="addOrderBtn">
+              <i class="fas fa-plus"></i> Add Order Item
+            </button>
           </div>
   
-          <button type="button" class="add-order-btn" id="addOrderBtn">
-            <i class="fas fa-plus"></i> Add Order Item
-          </button>
+          <div class="form-group">
+            <label class="form-label" for="pax">Pax</label>
+            <input type="number" id="pax" class="form-control" min="1" required>
+          </div>
   
           <div class="order-summary">
             <div class="summary-row">
@@ -736,7 +744,7 @@
           }
           categories[item.category].push(item);
         });
-  
+    
         Object.entries(categories).forEach(([category, items]) => {
           const optgroup = document.createElement('optgroup');
           optgroup.label = category;
@@ -744,8 +752,14 @@
           items.forEach(item => {
             const option = document.createElement('option');
             option.value = item.name;
-            option.textContent = `${item.name} - ₱${item.price.toFixed(2)}`;
-            option.dataset.price = item.price;
+            
+            // Fix price formatting - ensure it's a number
+            const price = typeof item.price === 'string' 
+              ? parseFloat(item.price.replace(/[^\d.]/g, '')) 
+              : item.price;
+              
+            option.textContent = `${item.name} - ₱${price.toFixed(2)}`;
+            option.dataset.price = price;
             optgroup.appendChild(option);
           });
           
@@ -755,32 +769,35 @@
   
       // Function to add a new order item
     function addOrderItem() {
-        const newItem = document.createElement('div');
-        newItem.className = 'order-item';
-        newItem.innerHTML = `
-          <select class="order-select">
-            <option value="">Select an item</option>
-            <!-- Options will be populated by JavaScript -->
-          </select>
-          <button class="remove-order" type="button">
-            <i class="fas fa-times"></i>
-          </button>
-        `;
-        
-        const select = newItem.querySelector('.order-select');
-        populateOrderDropdown(select);
-        
-        select.addEventListener('change', () => {
-          updateOrderItem(select);
-          calculateTotal();
-        });
-        
-        newItem.querySelector('.remove-order').addEventListener('click', (e) => {
-          e.target.closest('.order-item').remove();
-          calculateTotal();
-        });
-        
-        orderItemsContainer.appendChild(newItem);
+        try {
+          const newItem = document.createElement('div');
+          newItem.className = 'order-item';
+          newItem.innerHTML = `
+            <select class="order-select">
+              <option value="">Select an item</option>
+            </select>
+            <button class="remove-order" type="button">
+              <i class="fas fa-times"></i>
+            </button>
+          `;
+          
+          const select = newItem.querySelector('.order-select');
+          populateOrderDropdown(select);
+          
+          select.addEventListener('change', () => {
+            updateOrderItem(select);
+            calculateTotal();
+          });
+          
+          newItem.querySelector('.remove-order').addEventListener('click', (e) => {
+            e.target.closest('.order-item').remove();
+            calculateTotal();
+          });
+          
+          orderItemsContainer.appendChild(newItem);
+        } catch (error) {
+          console.error('Error adding order item:', error);
+        }
       }
   
       function updateOrderItem(select) {
@@ -812,16 +829,20 @@
       }
   
       function resetBillOutForm() {
-        orderItemsContainer.innerHTML = '';
-        document.getElementById('pax').value = '';
-        paidAmountEl.value = '';
-        totalAmount = 0;
-        totalAmountEl.textContent = '₱0.00';
-        changeAmountEl.textContent = '₱0.00';
-        currentBillOutRequest = null;
-        
-        // Add initial order item
-        addOrderItem();
+        try {
+          orderItemsContainer.innerHTML = '';
+          document.getElementById('pax').value = '';
+          paidAmountEl.value = '';
+          totalAmount = 0;
+          totalAmountEl.textContent = '₱0.00';
+          changeAmountEl.textContent = '₱0.00';
+          currentBillOutRequest = null;
+          
+          // Add initial order item
+          addOrderItem();
+        } catch (error) {
+          console.error('Error resetting bill out form:', error);
+        }
       }
   
       function submitBillOut() {
