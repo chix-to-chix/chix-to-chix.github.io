@@ -113,11 +113,20 @@
 
     let currentAction = '';
 
-    // Toggle dropdown
-    bell.addEventListener('click', (e) => {
-      e.stopPropagation();
-      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-    });
+    if (bell && dropdown) {
+      // Toggle dropdown
+      bell.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+      });
+    
+      // Close dropdown when clicking elsewhere
+      document.addEventListener('click', () => {
+        dropdown.style.display = 'none';
+      });
+    } else {
+      console.error("Notification bell elements not found");
+    }
 
     // Close dropdown when clicking elsewhere
     document.addEventListener('click', () => {
