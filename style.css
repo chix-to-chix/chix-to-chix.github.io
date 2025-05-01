@@ -482,3 +482,33 @@ h1 .highlight {
     padding: 20px;
   }
 }
+
+@keyframes slideIn {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+}
+
+.notification-toast.visible {
+  animation: slideIn 0.3s forwards;
+}
+
+.notification-toast:not(.visible) {
+  animation: slideOut 0.3s forwards;
+}
