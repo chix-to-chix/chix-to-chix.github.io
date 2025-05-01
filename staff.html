@@ -123,63 +123,66 @@
       measurementId: "G-862F051QMV"
     };
   
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
-    const auth = getAuth(app);
+    try {
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
+      const auth = getAuth(app);
   
-    // Authentication check
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = 'chixlogin.html';
-      } else if (user.email && user.email.startsWith('admin')) {
-        window.location.href = 'admin.html';
-      } else {
-        // Load requests when authenticated
-        loadRequests();
-      }
-    });
-  
-    function loadRequests() {
-      const requestsRef = ref(database, 'requests');
-      onValue(requestsRef, (snapshot) => {
-        const requests = snapshot.val();
-        const container = document.getElementById('requestsContainer');
-        container.innerHTML = '';
-        
-        if (!requests) {
-          container.innerHTML = '<div class="empty-state"><i class="fas fa-bell-slash"></i><p>No active requests</p></div>';
-          return;
+      onAuthStateChanged(auth, (user) => {
+        if (!user) {
+          window.location.href = 'chixlogin.html';
+        } else if (user.email && user.email.startsWith('admin')) {
+          window.location.href = 'admin.html';
+        } else {
+          loadRequests();
         }
-        
-        Object.entries(requests).forEach(([id, request]) => {
-          if (request.status !== 'completed') {
-            const card = document.createElement('div');
-            card.className = 'request-card';
-            card.innerHTML = `
-              <div class="request-info">
-                <h3>Table ${request.tableNumber} - ${request.action.replace('-', ' ')}</h3>
-                <p>${new Date(request.timestamp).toLocaleString()}</p>
-              </div>
-              <div class="request-actions">
-                <button class="btn-complete" onclick="markCompleted('${id}')">Complete</button>
-              </div>
-            `;
-            container.appendChild(card);
+      });
+  
+      function loadRequests() {
+        const requestsRef = ref(database, 'requests');
+        onValue(requestsRef, (snapshot) => {
+          const requests = snapshot.val();
+          const container = document.getElementById('requestsContainer');
+          container.innerHTML = '';
+          
+          if (!requests) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-bell-slash"></i><p>No active requests</p></div>';
+            return;
           }
+          
+          Object.entries(requests).forEach(([id, request]) => {
+            if (request.status !== 'completed') {
+              const card = document.createElement('div');
+              card.className = 'request-card';
+              card.innerHTML = `
+                <div class="request-info">
+                  <h3>Table ${request.tableNumber} - ${request.action.replace('-', ' ')}</h3>
+                  <p>${new Date(request.timestamp).toLocaleString()}</p>
+                </div>
+                <div class="request-actions">
+                  <button class="btn-complete" onclick="markCompleted('${id}')">Complete</button>
+                </div>
+              `;
+              container.appendChild(card);
+            }
+          });
+        });
+      }
+  
+      window.markCompleted = function(id) {
+        update(ref(database, `requests/${id}`), { status: 'completed' });
+      };
+  
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        signOut(auth).then(() => {
+          window.location.href = 'chixlogin.html';
         });
       });
+  
+    } catch (error) {
+      console.error("Firebase initialization failed:", error);
+      alert("Failed to initialize app. Please refresh the page.");
     }
-  
-    window.markCompleted = function(id) {
-      update(ref(database, `requests/${id}`), { status: 'completed' });
-    };
-  
-    // Logout
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      signOut(auth).then(() => {
-        window.location.href = 'chixlogin.html';
-      });
-    });
   </script>
   <script src="script.js"></script>
 </body>
