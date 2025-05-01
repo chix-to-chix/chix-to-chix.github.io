@@ -302,6 +302,7 @@
       border: 1px solid var(--text-light);
       border-radius: 6px;
       font-family: 'Poppins', sans-serif;
+      box-sizing: border-box;
     }
 
     .form-control:disabled {
@@ -321,8 +322,10 @@
     .order-item {
       display: flex;
       justify-content: space-between;
+      align-items: center; 
       padding: 0.5rem 0;
       border-bottom: 1px dashed var(--text-light);
+      gap: 0.5rem;
     }
 
     .order-item:last-child {
@@ -370,12 +373,13 @@
     }
 
     .order-select {
-      width: 100%;
+      width: calc(100% - 40px); 
       padding: 0.75rem;
       border: 1px solid var(--text-light);
       border-radius: 6px;
       margin-bottom: 0.5rem;
       font-family: 'Poppins', sans-serif;
+      box-sizing: border-box; 
     }
 
     .remove-order {
@@ -384,6 +388,9 @@
       border: none;
       cursor: pointer;
       font-size: 1rem;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
     }
     
     @keyframes modalFadeIn {
@@ -661,6 +668,9 @@
             };
             billOutTableNumber.textContent = tableNumber;
             billOutModal.style.display = 'flex';
+            
+            // Reset form and add first item
+            resetBillOutForm();
             addOrderItem();
           } else {
             document.getElementById('completeTableNumber').textContent = tableNumber;
