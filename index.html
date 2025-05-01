@@ -77,6 +77,7 @@
 
   <!-- Firebase SDK -->
   <script type="module">
+    import { serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getDatabase, ref, push, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
