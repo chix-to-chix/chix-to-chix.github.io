@@ -170,16 +170,6 @@
       opacity: 0.9;
     }
     
-    .btn-details {
-      background: var(--bg-light);
-      color: var(--text);
-      border: 1px solid var(--text-light);
-    }
-    
-    .btn-details:hover {
-      border-color: var(--text);
-    }
-    
     .empty-state {
       text-align: center;
       padding: 3rem 1rem;
@@ -412,8 +402,6 @@
         window.location.href = 'admin.html';
       } else {
         currentUser = user;
-        document.getElementById('usernameDisplay').textContent = 
-          user.displayName || user.email || 'User';
         loadRequests();
       }
     });
