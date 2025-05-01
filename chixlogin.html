@@ -8,6 +8,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
   <style>
+    * {
+      box-sizing: border-box;
+    }
+    
     .login-container {
       max-width: 400px;
       margin: 5rem auto;
@@ -30,12 +34,13 @@
     }
     
     .login-input {
-      width: 100%;
+      width: calc(100% - 2px); /* Account for border */
       padding: 12px 15px;
       margin-bottom: 1rem;
       border: 1px solid #ddd;
       border-radius: 8px;
       font-size: 1rem;
+      font-family: 'Poppins', sans-serif;
     }
     
     .login-button {
@@ -49,6 +54,7 @@
       font-weight: 600;
       cursor: pointer;
       transition: var(--transition);
+      font-family: 'Poppins', sans-serif;
     }
     
     .login-button:hover {
@@ -68,6 +74,7 @@
       cursor: pointer;
       font-weight: 600;
       color: var(--text-light);
+      font-family: 'Poppins', sans-serif;
     }
     
     .user-type button.active {
