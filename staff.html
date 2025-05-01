@@ -311,21 +311,31 @@
     }
 
     .order-items {
-      margin: 1rem 0;
       border: 1px solid var(--text-light);
       border-radius: 6px;
       padding: 1rem;
       max-height: 200px;
       overflow-y: auto;
+      background-color: var(--bg-light);
+    }
+
+    .order-items-section {
+      margin: 1rem 0;
+    }
+  
+    .order-items-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text);
     }
 
     .order-item {
       display: flex;
-      justify-content: space-between;
-      align-items: center; 
+      align-items: center;
+      gap: 10px;
       padding: 0.5rem 0;
       border-bottom: 1px dashed var(--text-light);
-      gap: 0.5rem;
     }
 
     .order-item:last-child {
@@ -373,15 +383,13 @@
     }
 
     .order-select {
-      width: calc(100% - 40px); 
+      flex: 1;
       padding: 0.75rem;
       border: 1px solid var(--text-light);
       border-radius: 6px;
-      margin-bottom: 0.5rem;
       font-family: 'Poppins', sans-serif;
-      box-sizing: border-box; 
     }
-
+  
     .remove-order {
       color: var(--primary);
       background: none;
@@ -389,8 +397,6 @@
       cursor: pointer;
       font-size: 1rem;
       padding: 0.5rem;
-      display: flex;
-      align-items: center;
     }
     
     @keyframes modalFadeIn {
@@ -495,15 +501,18 @@
             <label for="pax">Pax</label>
             <input type="number" id="pax" class="form-control" min="1" required>
           </div>
-
-          <div class="order-items" id="orderItemsContainer">
-            <!-- Order items will be added here -->
+  
+          <div class="order-items-section">
+            <label class="order-items-label">Order Items</label>
+            <div class="order-items" id="orderItemsContainer">
+              <!-- Order items will be added here -->
+            </div>
           </div>
-
+  
           <button type="button" class="add-order-btn" id="addOrderBtn">
-            <i class="fas fa-plus"></i> Add Order
+            <i class="fas fa-plus"></i> Add Order Item
           </button>
-
+  
           <div class="order-summary">
             <div class="summary-row">
               <span>Total Amount:</span>
@@ -745,15 +754,24 @@
       }
   
       // Function to add a new order item
-      function addOrderItem() {
-        const newItem = orderItemTemplate.cloneNode(true);
-        newItem.style.display = 'block';
+    function addOrderItem() {
+        const newItem = document.createElement('div');
+        newItem.className = 'order-item';
+        newItem.innerHTML = `
+          <select class="order-select">
+            <option value="">Select an item</option>
+            <!-- Options will be populated by JavaScript -->
+          </select>
+          <button class="remove-order" type="button">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
         
         const select = newItem.querySelector('.order-select');
         populateOrderDropdown(select);
         
-        select.addEventListener('change', (e) => {
-          updateOrderItem(e.target);
+        select.addEventListener('change', () => {
+          updateOrderItem(select);
           calculateTotal();
         });
         
@@ -801,6 +819,9 @@
         totalAmountEl.textContent = '₱0.00';
         changeAmountEl.textContent = '₱0.00';
         currentBillOutRequest = null;
+        
+        // Add initial order item
+        addOrderItem();
       }
   
       function submitBillOut() {
