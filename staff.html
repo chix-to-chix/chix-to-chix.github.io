@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chix To Chix - Staff Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .staff-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .staff-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .requests-container {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .request-card {
+      background: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .request-info {
+      margin-bottom: 1rem;
+    }
+    
+    .request-actions {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .request-actions button {
+      padding: 8px 15px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .btn-accept {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-complete {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .bill-form {
+      display: none;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--bg);
+      border-radius: 8px;
+    }
+    
+    .bill-form input, .bill-form select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    
+    .notification-sound {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="texture-overlay"></div>
+  <div class="staff-container">
+    <div class="staff-header">
+      <h1><i class="fas fa-concierge-bell"></i> Staff Dashboard</h1>
+      <button id="logoutBtn">Logout</button>
+    </div>
+    
+    <h2>Active Requests</h2>
+    <div class="requests-container" id="requestsContainer">
+      <div class="empty-state">
+        <i class="fas fa-bell-slash"></i>
+        <p>No active requests</p>
+      </div>
+    </div>
+    
+    <audio class="notification-sound" src="notification.mp3" preload="auto"></audio>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  
+  <script>
+    // Check authentication
+    if (!localStorage.getItem('userRole') || localStorage.getItem('userRole') !== 'staff') {
+      window.location.href = 'https://chix-to-chix.github.io/chixlogin';
+    }
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      databaseURL: "YOUR_DATABASE_URL",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    const requestsContainer = document.getElementById('requestsContainer');
+    const notificationSound = document.querySelector('.notification-sound');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // Logout
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('userRole');
+      window.location.href = 'https://chix-to-chix.github.io/chixlogin';
+    });
+
+    // Listen for new requests
+    database.ref('requests').orderByChild('timestamp').on('value', (snapshot) => {
+      const requests = snapshot.val();
+      requestsContainer.innerHTML = '';
+      
+      if (!requests) {
+        requestsContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-bell-slash"></i>
+            <p>No active requests</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Convert to array and sort by timestamp (newest first)
+      const requestsArray = Object.entries(requests).map(([id, request]) => ({ id, ...request }));
+      requestsArray.sort((a, b) => b.timestamp - a.timestamp);
+      
+      requestsArray.forEach(request => {
+        if (request.status === 'completed') return;
+        
+        const requestCard = document.createElement('div');
+        requestCard.className = 'request-card';
+        requestCard.dataset.id = request.id;
+        
+        let actionText = '';
+        switch(request.action) {
+          case 'ready-to-order': actionText = 'Ready to Order'; break;
+          case 'need-assistance': actionText = 'Needs Assistance'; break;
+          case 'bill-out': actionText = 'Requesting Bill'; break;
+        }
+        
+        requestCard.innerHTML = `
+          <div class="request-info">
+            <h3>Table ${request.tableNumber} - ${actionText}</h3>
+            <p>${new Date(request.timestamp).toLocaleString()}</p>
+          </div>
+          <div class="request-actions">
+            <button class="btn-accept" onclick="handleRequest('${request.id}', 'accept')">Accept</button>
+          </div>
+          <div class="bill-form" id="form-${request.id}">
+            ${request.action === 'bill-out' ? `
+              <h4>Bill Details</h4>
+              <div id="orderItems-${request.id}">
+                <div class="order-item">
+                  <select class="order-select">
+                    <option value="">Select Item</option>
+                    <!-- Items will be populated by JavaScript -->
+                  </select>
+                  <input type="number" min="1" value="1" class="order-qty" placeholder="Qty">
+                  <button onclick="addOrderItem('${request.id}')">+</button>
+                </div>
+              </div>
+              <input type="number" id="pax-${request.id}" placeholder="Pax" min="1">
+              <input type="number" id="paidAmount-${request.id}" placeholder="Paid Amount" min="0" step="0.01">
+              <input type="text" id="totalAmount-${request.id}" placeholder="Total Amount" readonly>
+              <input type="text" id="change-${request.id}" placeholder="Change" readonly>
+              <button class="btn-complete" onclick="completeBill('${request.id}')">Complete Bill</button>
+            ` : `
+              <button class="btn-complete" onclick="completeRequest('${request.id}')">Mark as Completed</button>
+            `}
+          </div>
+        `;
+        
+        requestsContainer.appendChild(requestCard);
+        
+        // Play notification sound for new requests
+        if (!request.handled) {
+          notificationSound.play();
+          database.ref(`requests/${request.id}`).update({ handled: true });
+        }
+      });
+    });
+
+    // Handle request actions
+    function handleRequest(requestId, action) {
+      if (action === 'accept') {
+        document.getElementById(`form-${requestId}`).style.display = 'block';
+      }
+    }
+
+    function completeRequest(requestId) {
+      database.ref(`requests/${requestId}`).update({
+        status: 'completed'
+      });
+    }
+
+    function addOrderItem(requestId) {
+      const orderItems = document.getElementById(`orderItems-${requestId}`);
+      const newItem = document.createElement('div');
+      newItem.className = 'order-item';
+      newItem.innerHTML = `
+        <select class="order-select">
+          <option value="">Select Item</option>
+          <!-- Items will be populated by JavaScript -->
+        </select>
+        <input type="number" min="1" value="1" class="order-qty" placeholder="Qty">
+        <button onclick="this.parentElement.remove()">-</button>
+      `;
+      orderItems.appendChild(newItem);
+    }
+
+    function completeBill(requestId) {
+      const tableNumber = document.querySelector(`[data-id="${requestId}"] h3`).textContent.match(/Table (\d+)/)[1];
+      const pax = document.getElementById(`pax-${requestId}`).value;
+      const paidAmount = parseFloat(document.getElementById(`paidAmount-${requestId}`).value);
+      const totalAmount = parseFloat(document.getElementById(`totalAmount-${requestId}`).value);
+      
+      if (!pax || isNaN(paidAmount) {
+        alert('Please fill all fields');
+        return;
+      }
+      
+      // Save to completed bills
+      database.ref('completedBills').push().set({
+        tableNumber,
+        pax,
+        totalAmount,
+        paidAmount,
+        change: paidAmount - totalAmount,
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+      }).then(() => {
+        // Mark request as completed
+        database.ref(`requests/${requestId}`).update({
+          status: 'completed'
+        });
+      });
+    }
+  </script>
+</body>
+</html>
