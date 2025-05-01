@@ -4,370 +4,118 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chix To Chix - Staff Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
   <style>
-    :root {
-      --primary: #E63946;
-      --primary-light: #FF686B;
-      --secondary: #457B9D;
-      --accent: #F4A261;
-      --success: #2A9D8F;
-      --warning: #E9C46A;
-      --text: #2B2D42;
-      --text-light: #8D99AE;
-      --bg: #F8F9FA;
-      --card-bg: #FFFFFF;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
-      --transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 0;
-    }
-
-    .dashboard {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      min-height: 100vh;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      background: var(--primary);
-      color: white;
-      padding: 2rem 1.5rem;
-      box-shadow: var(--shadow-md);
-      z-index: 10;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 2.5rem;
-    }
-
-    .brand-logo {
-      width: 40px;
-      height: 40px;
-    }
-
-    .brand-name {
-      font-weight: 700;
-      font-size: 1.25rem;
-    }
-
-    .nav-menu {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .nav-item:hover, .nav-item.active {
-      background: rgba(255,255,255,0.15);
-    }
-
-    .nav-item i {
-      width: 24px;
-      text-align: center;
-    }
-
-    /* Main Content */
-    .main-content {
+    .staff-container {
+      max-width: 1200px;
+      margin: 0 auto;
       padding: 2rem;
-      overflow-y: auto;
     }
-
-    .header {
+    
+    .staff-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 2rem;
     }
-
-    .page-title {
-      font-size: 1.75rem;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .user-menu {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--primary-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    /* Requests Section */
-    .requests-grid {
+    
+    .requests-container {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 1.5rem;
+      gap: 1rem;
+      margin-bottom: 2rem;
     }
-
+    
     .request-card {
-      background: var(--card-bg);
-      border-radius: 12px;
+      background: white;
+      border-radius: 10px;
       padding: 1.5rem;
-      box-shadow: var(--shadow-sm);
-      transition: var(--transition);
-      border-left: 4px solid var(--primary);
-      position: relative;
-      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
     }
 
     .request-card:hover {
       transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
     }
-
-    .request-card.ready-to-order {
-      border-left-color: var(--success);
-    }
-
-    .request-card.need-assistance {
-      border-left-color: var(--warning);
-    }
-
-    .request-card.bill-out {
-      border-left-color: var(--secondary);
-    }
-
-    .request-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+    
+    .request-info {
       margin-bottom: 1rem;
     }
-
-    .request-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .request-time {
-      font-size: 0.85rem;
-      color: var(--text-light);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .request-table {
-      display: inline-block;
-      background: var(--primary);
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      margin-bottom: 0.5rem;
-    }
-
+    
     .request-actions {
       display: flex;
-      gap: 0.75rem;
-      margin-top: 1.25rem;
+      gap: 1rem;
     }
-
-    .btn {
-      padding: 0.5rem 1rem;
+    
+    .request-actions button {
+      padding: 8px 15px;
       border-radius: 6px;
       border: none;
-      font-weight: 500;
-      font-size: 0.9rem;
       cursor: pointer;
-      transition: var(--transition);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      font-weight: 600;
     }
-
-    .btn-primary {
+    
+    .btn-accept {
       background: var(--primary);
       color: white;
     }
-
-    .btn-primary:hover {
-      background: var(--primary-light);
-    }
-
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--text-light);
-      color: var(--text-light);
-    }
-
-    .btn-outline:hover {
-      border-color: var(--text);
-      color: var(--text);
-    }
-
-    .btn-success {
-      background: var(--success);
+    
+    .btn-complete {
+      background: #4CAF50;
       color: white;
     }
-
-    .btn-success:hover {
-      opacity: 0.9;
+    
+    .bill-form {
+      display: none;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--bg);
+      border-radius: 8px;
     }
-
-    .empty-state {
-      text-align: center;
-      padding: 3rem 1rem;
-      grid-column: 1 / -1;
+    
+    .bill-form input, .bill-form select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
     }
-
-    .empty-state i {
-      font-size: 3rem;
-      color: var(--text-light);
-      margin-bottom: 1rem;
-    }
-
-    .empty-state p {
-      color: var(--text-light);
-      font-size: 1.1rem;
-      margin: 0;
-    }
-
-    /* Notification Badge */
-    .notification-badge {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      background: var(--accent);
-      color: white;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
+    
+    .order-item {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 600;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
     }
-
-    /* Responsive */
-    @media (max-width: 992px) {
-      .dashboard {
-        grid-template-columns: 1fr;
-      }
-      
-      .sidebar {
-        display: none;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .main-content {
-        padding: 1.5rem;
-      }
-      
-      .requests-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Animations */
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .request-card {
-      animation: slideIn 0.3s ease-out forwards;
+    
+    .notification-sound {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <div class="dashboard">
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <div class="brand">
-        <img src="img/logo.png" alt="Chix To Chix" class="brand-logo">
-        <span class="brand-name">Chix To Chix</span>
-      </div>
-      
-      <nav class="nav-menu">
-        <div class="nav-item active">
-          <i class="fas fa-concierge-bell"></i>
-          <span>Requests</span>
-        </div>
-        <div class="nav-item">
-          <i class="fas fa-clock"></i>
-          <span>Order History</span>
-        </div>
-        <div class="nav-item">
-          <i class="fas fa-chart-line"></i>
-          <span>Analytics</span>
-        </div>
-        <div class="nav-item">
-          <i class="fas fa-cog"></i>
-          <span>Settings</span>
-        </div>
-      </nav>
+  <div class="texture-overlay"></div>
+  <div class="staff-container">
+    <div class="staff-header">
+      <h1><i class="fas fa-concierge-bell"></i> Staff Dashboard</h1>
+      <button id="logoutBtn">Logout</button>
     </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-      <div class="header">
-        <h1 class="page-title">Service Requests</h1>
-        <div class="user-menu">
-          <div class="user-avatar" id="logoutBtn">S</div>
-        </div>
-      </div>
-
-      <div class="requests-grid" id="requestsContainer">
-        <div class="empty-state">
-          <i class="fas fa-bell-slash"></i>
-          <p>No active requests at the moment</p>
-        </div>
+    
+    <h2>Active Requests</h2>
+    <div class="requests-container" id="requestsContainer">
+      <div class="empty-state">
+        <i class="fas fa-bell-slash"></i>
+        <p>No active requests</p>
       </div>
     </div>
+    
+    <audio class="notification-sound" src="notification.mp3" preload="auto"></audio>
   </div>
-
-  <audio class="notification-sound" src="notification.mp3" preload="auto"></audio>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
     import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
   
     const firebaseConfig = {
@@ -386,76 +134,82 @@
     const database = getDatabase(app);
     const auth = getAuth(app);
 
-    // Track displayed requests
-    const displayedRequests = new Map();
-    let currentUser = null;
-
     // Authentication state handler
     onAuthStateChanged(auth, (user) => {
       if (!user) {
+        // No user signed in - redirect to login
         window.location.href = 'chixlogin.html';
       } else if (user.email && user.email.startsWith('admin')) {
+        // Admin trying to access staff page - redirect
         window.location.href = 'admin.html';
       } else {
-        currentUser = user;
+        // Staff user - load requests
         loadRequests();
-        updateUserAvatar();
       }
     });
 
-    // Update user avatar with initials
-    function updateUserAvatar() {
-      if (currentUser && currentUser.displayName) {
-        const names = currentUser.displayName.split(' ');
-        const initials = names[0].charAt(0) + (names[1] ? names[1].charAt(0) : '');
-        document.getElementById('logoutBtn').textContent = initials;
-      }
-    }
+    const displayedRequests = new Set();
 
-    // Load and display requests
     function loadRequests() {
       const requestsRef = ref(database, 'requests');
       const notificationSound = document.querySelector('.notification-sound');
       const container = document.getElementById('requestsContainer');
-
+    
       onValue(requestsRef, (snapshot) => {
         const requests = snapshot.val();
-        const currentTime = Date.now();
         
-        // Create a document fragment for efficient DOM updates
+        // Create a temporary container to build the new state
         const fragment = document.createDocumentFragment();
-        const activeRequestIds = new Set();
+        const currentRequestIds = new Set();
         
         if (!requests) {
           container.innerHTML = `
             <div class="empty-state">
               <i class="fas fa-bell-slash"></i>
-              <p>No active requests at the moment</p>
+              <p>No active requests</p>
             </div>
           `;
           displayedRequests.clear();
           return;
         }
-
-        // Process all requests
-        Object.entries(requests).forEach(([id, request]) => {
-          // Skip completed or old requests (older than 4 hours)
-          if (request.status === 'completed' || 
-              (currentTime - request.timestamp) > (4 * 60 * 60 * 1000)) {
-            if (displayedRequests.has(id)) {
-              removeRequestCard(id);
-            }
-            return;
-          }
-
-          activeRequestIds.add(id);
+    
+        // Convert to array and filter completed requests
+        const activeRequests = Object.entries(requests)
+          .filter(([_, request]) => request.status !== 'completed')
+          .sort((a, b) => b[1].timestamp - a[1].timestamp);
+    
+        if (activeRequests.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-bell-slash"></i>
+              <p>No active requests</p>
+            </div>
+          `;
+          displayedRequests.clear();
+          return;
+        }
+    
+        // Process each request
+        activeRequests.forEach(([id, request]) => {
+          currentRequestIds.add(id);
           
-          // Create new card if request isn't already displayed
+          // Only create new card if this request wasn't already displayed
           if (!displayedRequests.has(id)) {
-            const card = createRequestCard(id, request);
+            const card = document.createElement('div');
+            card.className = 'request-card';
+            card.id = `request-${id}`; // Unique ID for each card
+            card.innerHTML = `
+              <div class="request-info">
+                <h3>Table ${request.tableNumber} - ${formatAction(request.action)}</h3>
+                <p>${new Date(request.timestamp).toLocaleString()}</p>
+              </div>
+              <div class="request-actions">
+                <button class="btn-complete" data-id="${id}">Complete</button>
+              </div>
+            `;
             fragment.appendChild(card);
-            displayedRequests.set(id, { element: card, request });
-            
+            displayedRequests.add(id);
+    
             // Play sound for new requests
             if (!request.handled) {
               notificationSound.play();
@@ -463,117 +217,46 @@
             }
           }
         });
-
-        // Remove any cards that are no longer active
-        displayedRequests.forEach((_, id) => {
-          if (!activeRequestIds.has(id)) {
-            removeRequestCard(id);
+    
+        // Remove any cards that are no longer in active requests
+        displayedRequests.forEach(id => {
+          if (!currentRequestIds.has(id)) {
+            displayedRequests.delete(id);
+            const cardToRemove = document.getElementById(`request-${id}`);
+            if (cardToRemove) {
+              cardToRemove.remove();
+            }
           }
         });
-
-        // Update the DOM
+    
+        // Only update DOM if there are new cards to add
         if (fragment.hasChildNodes()) {
-          // If we have an empty state, replace it
-          if (container.querySelector('.empty-state')) {
-            container.innerHTML = '';
-          }
           container.prepend(fragment);
-        } else if (container.children.length === 0) {
-          // Show empty state if no requests
-          container.innerHTML = `
-            <div class="empty-state">
-              <i class="fas fa-bell-slash"></i>
-              <p>No active requests at the moment</p>
-            </div>
-          `;
         }
+    
+        // Add event listeners to complete buttons
+        document.querySelectorAll('.btn-complete').forEach(button => {
+          button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const requestId = button.dataset.id;
+            update(ref(database, `requests/${requestId}`), { 
+              status: 'completed',
+              completedAt: Date.now() 
+            }).then(() => {
+              displayedRequests.delete(requestId);
+            });
+          });
+        });
       });
     }
-
-    // Create a request card element
-    function createRequestCard(id, request) {
-      const card = document.createElement('div');
-      card.className = `request-card ${request.action}`;
-      card.id = `request-${id}`;
-      
-      const timeAgo = getTimeAgo(request.timestamp);
-      
-      card.innerHTML = `
-        <div class="request-header">
-          <span class="request-table">Table ${request.tableNumber}</span>
-          <span class="request-time"><i class="far fa-clock"></i> ${timeAgo}</span>
-        </div>
-        <h3 class="request-title">${formatAction(request.action)}</h3>
-        <div class="request-actions">
-          <button class="btn btn-success complete-btn" data-id="${id}">
-            <i class="fas fa-check"></i> Complete
-          </button>
-          <button class="btn btn-outline details-btn" data-id="${id}">
-            <i class="fas fa-info-circle"></i> Details
-          </button>
-        </div>
-      `;
-      
-      // Add event listeners
-      card.querySelector('.complete-btn').addEventListener('click', () => completeRequest(id));
-      card.querySelector('.details-btn').addEventListener('click', () => showDetails(request));
-      
-      return card;
-    }
-
-    // Complete a request
-    function completeRequest(id) {
-      update(ref(database, `requests/${id}`), { 
-        status: 'completed',
-        completedAt: Date.now(),
-        completedBy: currentUser?.uid || 'staff'
-      }).then(() => {
-        removeRequestCard(id);
-      });
-    }
-
-    // Remove a request card
-    function removeRequestCard(id) {
-      const card = document.getElementById(`request-${id}`);
-      if (card) {
-        card.classList.add('removing');
-        setTimeout(() => card.remove(), 300);
-      }
-      displayedRequests.delete(id);
-    }
-
-    // Show request details (placeholder for future implementation)
-    function showDetails(request) {
-      alert(`Details for Table ${request.tableNumber}\n\n` +
-            `Request: ${formatAction(request.action)}\n` +
-            `Time: ${new Date(request.timestamp).toLocaleString()}`);
-    }
-
-    // Format action text
+    
+    // Helper function to format action text
     function formatAction(action) {
       return action.split('-').map(word => 
         word.charAt(0).toUpperCase() + word.slice(1)
       ).join(' ');
     }
-
-    // Calculate time ago
-    function getTimeAgo(timestamp) {
-      const seconds = Math.floor((Date.now() - timestamp) / 1000);
-      
-      if (seconds < 60) return 'Just now';
-      if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
-      if (seconds < 86400) return `${Math.floor(seconds / 3600)} hour${seconds >= 7200 ? 's' : ''} ago`;
-      return `${Math.floor(seconds / 86400)} day${seconds >= 172800 ? 's' : ''} ago`;
-    }
-
-    // Logout functionality
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      if (confirm('Are you sure you want to logout?')) {
-        signOut(auth).then(() => {
-          window.location.href = 'chixlogin.html';
-        });
-      }
-    });
   </script>
+  <script src="script.js"></script>
 </body>
 </html>
