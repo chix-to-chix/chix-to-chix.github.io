@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chix To Chix Menu</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 </head>
 <body>
   <div class="texture-overlay"></div>
@@ -14,9 +16,9 @@
   <!-- Notification Bell -->
   <div class="notification-bell">
     <i class="fas fa-bell"></i>
-    <span class="notification-count">0</span>
     <div class="notification-dropdown">
-      <div class="notification-item" data-action="call-server">Call a Server</div>
+      <div class="notification-item" data-action="ready-to-order">Ready to Order</div>
+      <div class="notification-item" data-action="need-assistance">Need Assistance</div>
       <div class="notification-item" data-action="bill-out">Bill Out</div>
     </div>
   </div>
@@ -25,57 +27,100 @@
   <div class="modal" id="tableModal">
     <div class="modal-content">
       <span class="close-modal">&times;</span>
-      <h3>Enter Table Number</h3>
+      <h3 id="modalTitle">Enter Table Number</h3>
       <input type="number" id="tableNumber" placeholder="e.g. 12" min="1">
       <button id="submitTable">Submit</button>
     </div>
   </div>
 
   <main class="app-container">
-    <header class="app-header">
-      <div class="logo-container">
-        <img src="img/logo.png" alt="Chix To Chix Logo" class="logo-img">
-      </div>
-      <h1>Chix To Chix <span class="highlight">Menu</span></h1>
-      <p class="subtitle">Unlimited Chicken Wings</p>
-      <div class="header-divider">
-        <div class="divider-line"></div>
-        <div class="divider-icon"><i class="fas fa-drumstick-bite"></i></div>
-        <div class="divider-line"></div>
-      </div>
-    </header>
-
-    <div class="search-container">
-      <i class="fas fa-search search-icon"></i>
-      <input type="text" id="searchBar" placeholder="Search flavors, meals..." />
-    </div>
-
-    <div class="category-tabs">
-      <button class="active" data-category="all">
-        <i class="fas fa-bars"></i> All
-      </button>
-      <button data-category="Unli Wings">
-        <i class="fas fa-infinity"></i> Unli Wings
-      </button>
-      <button data-category="Solo & Bilao">
-        <i class="fas fa-utensils"></i> Solo & Bilao
-      </button>
-      <button data-category="Beverages">
-        <i class="fas fa-glass-whiskey"></i> Beverages
-      </button>
-      <button data-category="Extras">
-        <i class="fas fa-plus-circle"></i> Extras
-      </button>
-    </div>
-
-    <h2 class="unli-price-header" style="display: none;">Unlimited Wings - ₱299.00</h2>
-
-    <section id="menuList" class="card-grid">
-      <!-- Menu items -->
-    </section>
+    <!-- ... (keep your existing menu HTML) ... -->
   </main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCuZXC1J1R15kejNO7_4430qM2qkcdcxQE",
+    authDomain: "chix-to-chix.firebaseapp.com",
+    projectId: "chix-to-chix",
+    storageBucket: "chix-to-chix.firebasestorage.app",
+    messagingSenderId: "913059913710",
+    appId: "1:913059913710:web:754b9101988c61de8478ff",
+    measurementId: "G-862F051QMV"
+  };
+
+  // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const database = firebase.database();
+  </script>
   <script src="script.js"></script>
+  <script>
+    // Notification System
+    const bell = document.querySelector('.notification-bell');
+    const dropdown = document.querySelector('.notification-dropdown');
+    const modal = document.getElementById('tableModal');
+    const closeModal = document.querySelector('.close-modal');
+    const submitTable = document.getElementById('submitTable');
+    const tableNumberInput = document.getElementById('tableNumber');
+    const modalTitle = document.getElementById('modalTitle');
+
+    let currentAction = '';
+
+    // Toggle dropdown
+    bell.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Close dropdown when clicking elsewhere
+    document.addEventListener('click', () => {
+      dropdown.style.display = 'none';
+    });
+
+    // Handle notification items
+    document.querySelectorAll('.notification-item').forEach(item => {
+      item.addEventListener('click', () => {
+        currentAction = item.dataset.action;
+        modalTitle.textContent = `Table Number (${item.textContent})`;
+        modal.style.display = 'block';
+        dropdown.style.display = 'none';
+      });
+    });
+
+    // Close modal
+    closeModal.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    // Submit table number
+    submitTable.addEventListener('click', () => {
+      const tableNumber = tableNumberInput.value;
+      if (tableNumber) {
+        // Send to Firebase
+        const requestRef = database.ref('requests').push();
+        requestRef.set({
+          action: currentAction,
+          tableNumber: tableNumber,
+          timestamp: firebase.database.ServerValue.TIMESTAMP,
+          status: 'pending'
+        }).then(() => {
+          modal.style.display = 'none';
+          tableNumberInput.value = '';
+          alert(`Request sent for table ${tableNumber}`);
+        }).catch(error => {
+          console.error("Error sending request:", error);
+          alert("Error sending request. Please try again.");
+        });
+      }
+    });
+  </script>
 </body>
 </html>
