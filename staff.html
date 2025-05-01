@@ -534,320 +534,364 @@
   </div>
 
   <script type="module">
-    // Import menu items from script.js
-    import { menuItems, flavors, unliPrice } from './script.js';
-
-    // Your existing Firebase imports and config
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCuZXC1J1R15kejNO7_4430qM2qkcdcxQE",
-      authDomain: "chix-to-chix.firebaseapp.com",
-      databaseURL: "https://chix-to-chix-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "chix-to-chix",
-      storageBucket: "chix-to-chix.appspot.com",
-      messagingSenderId: "913059913710",
-      appId: "1:913059913710:web:754b9101988c61de8478ff",
-      measurementId: "G-862F051QMV"
-    };
-
-    // Combine all items for the order dropdown
-    const allMenuItems = [
-      ...menuItems,
-      ...flavors.map(flavor => ({
-        name: `${flavor.name} (Unli Wings)`, 
-        price: 299.00, // Base price for Unli Wings
-        category: "Unli Wings"
-      }))
-    ];
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
-    const auth = getAuth(app);
-
-    // DOM Elements
-    const logoutModal = document.getElementById('logoutModal');
-    const completeModal = document.getElementById('completeModal');
-    const billOutModal = document.getElementById('billOutModal');
-    const billOutTableNumber = document.getElementById('billOutTableNumber');
-    const orderItemsContainer = document.getElementById('orderItemsContainer');
-    const orderItemTemplate = document.getElementById('orderItemTemplate');
-    const addOrderBtn = document.getElementById('addOrderBtn');
-    const totalAmountEl = document.getElementById('totalAmount');
-    const paidAmountEl = document.getElementById('paidAmount');
-    const changeAmountEl = document.getElementById('changeAmount');
-    const submitBillOutBtn = document.getElementById('submitBillOut');
-    const cancelBillOutBtn = document.getElementById('cancelBillOut');
-
-    let currentRequestId = null;
-    let currentUser = null;
-    let currentBillOutRequest = null;
-    let totalAmount = 0;
-
-    // Track displayed requests
-    const displayedRequests = new Set();
-
-    // Authentication state handler
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = 'chixlogin.html';
-      } else if (user.email && user.email.startsWith('admin')) {
-        window.location.href = 'admin.html';
-      } else {
-        currentUser = user;
-        loadRequests();
-      }
-    });
-
-    // Function to populate order dropdown
-    function populateOrderDropdown(selectElement) {
-      // Clear existing options
-      selectElement.innerHTML = '<option value="">Select an item</option>';
-      
-      // Group items by category
-      const categories = {};
-      allMenuItems.forEach(item => {
-        if (!categories[item.category]) {
-          categories[item.category] = [];
+      // Import menu items from script.js
+      import { menuItems, flavors, unliPrice } from './script.js';
+  
+      // Firebase imports
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+      import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+      import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  
+      const firebaseConfig = {
+        apiKey: "AIzaSyCuZXC1J1R15kejNO7_4430qM2qkcdcxQE",
+        authDomain: "chix-to-chix.firebaseapp.com",
+        databaseURL: "https://chix-to-chix-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "chix-to-chix",
+        storageBucket: "chix-to-chix.appspot.com",
+        messagingSenderId: "913059913710",
+        appId: "1:913059913710:web:754b9101988c61de8478ff",
+        measurementId: "G-862F051QMV"
+      };
+  
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
+      const auth = getAuth(app);
+  
+      // DOM Elements
+      const requestsContainer = document.getElementById('requestsContainer');
+      const logoutModal = document.getElementById('logoutModal');
+      const completeModal = document.getElementById('completeModal');
+      const billOutModal = document.getElementById('billOutModal');
+      const billOutTableNumber = document.getElementById('billOutTableNumber');
+      const orderItemsContainer = document.getElementById('orderItemsContainer');
+      const orderItemTemplate = document.getElementById('orderItemTemplate');
+      const addOrderBtn = document.getElementById('addOrderBtn');
+      const totalAmountEl = document.getElementById('totalAmount');
+      const paidAmountEl = document.getElementById('paidAmount');
+      const changeAmountEl = document.getElementById('changeAmount');
+      const submitBillOutBtn = document.getElementById('submitBillOut');
+      const cancelBillOutBtn = document.getElementById('cancelBillOut');
+  
+      let currentRequestId = null;
+      let currentUser = null;
+      let currentBillOutRequest = null;
+      let totalAmount = 0;
+  
+      // Authentication state handler
+      onAuthStateChanged(auth, (user) => {
+        if (!user) {
+          window.location.href = 'chixlogin.html';
+        } else if (user.email && user.email.startsWith('admin')) {
+          window.location.href = 'admin.html';
+        } else {
+          currentUser = user;
+          setupRealtimeListener();
         }
-        categories[item.category].push(item);
       });
-
-      // Add optgroups for each category
-      Object.entries(categories).forEach(([category, items]) => {
-        const optgroup = document.createElement('optgroup');
-        optgroup.label = category;
+  
+      // Set up real-time listener for requests
+      function setupRealtimeListener() {
+        const requestsRef = ref(database, 'requests');
         
-        items.forEach(item => {
-          const option = document.createElement('option');
-          option.value = item.name;
-          option.textContent = `${item.name} - ₱${item.price.toFixed(2)}`;
-          option.dataset.price = item.price;
-          optgroup.appendChild(option);
+        onValue(requestsRef, (snapshot) => {
+          const requests = snapshot.val();
+          requestsContainer.innerHTML = '';
+          
+          if (!requests) {
+            requestsContainer.innerHTML = `
+              <div class="empty-state">
+                <i class="fas fa-bell-slash"></i>
+                <p>No active requests</p>
+              </div>
+            `;
+            return;
+          }
+          
+          let hasPendingRequests = false;
+          
+          Object.entries(requests).forEach(([id, request]) => {
+            if (request.status !== 'completed') {
+              hasPendingRequests = true;
+              renderRequestCard(id, request);
+            }
+          });
+          
+          if (!hasPendingRequests) {
+            requestsContainer.innerHTML = `
+              <div class="empty-state">
+                <i class="fas fa-bell-slash"></i>
+                <p>No active requests</p>
+              </div>
+            `;
+          }
+        });
+      }
+  
+      // Render a request card
+      function renderRequestCard(id, request) {
+        const card = document.createElement('div');
+        card.className = `request-card ${request.action.replace(/-/g, ' ')}`;
+        
+        card.innerHTML = `
+          <div class="request-info">
+            <h3>Table ${request.tableNumber} - ${formatAction(request.action)}</h3>
+            <p><i class="far fa-clock"></i> ${getTimeAgo(request.timestamp)}</p>
+          </div>
+          <div class="request-actions">
+            <button class="btn-complete" data-id="${id}">
+              <i class="fas fa-check"></i> Complete
+            </button>
+          </div>
+        `;
+        
+        // Add event listener to the complete button
+        const completeBtn = card.querySelector('.btn-complete');
+        completeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          currentRequestId = id;
+          const card = e.target.closest('.request-card');
+          const tableNumber = card.querySelector('h3').textContent.match(/Table (\d+)/)[1];
+          const requestType = card.querySelector('h3').textContent.split(' - ')[1];
+          
+          if (requestType === 'Bill Out') {
+            currentBillOutRequest = {
+              id: currentRequestId,
+              tableNumber: tableNumber
+            };
+            billOutTableNumber.textContent = tableNumber;
+            billOutModal.style.display = 'flex';
+            addOrderItem();
+          } else {
+            document.getElementById('completeTableNumber').textContent = tableNumber;
+            document.getElementById('completeRequestType').textContent = requestType;
+            completeModal.style.display = 'flex';
+          }
         });
         
-        selectElement.appendChild(optgroup);
-      });
-    }
-
-    // Function to add a new order item
-    function addOrderItem() {
-      const newItem = orderItemTemplate.cloneNode(true);
-      newItem.style.display = 'block';
-      
-      const select = newItem.querySelector('.order-select');
-      populateOrderDropdown(select);
-      
-      select.addEventListener('change', (e) => {
-        updateOrderItem(e.target);
-        calculateTotal();
-      });
-      
-      newItem.querySelector('.remove-order').addEventListener('click', (e) => {
-        e.target.closest('.order-item').remove();
-        calculateTotal();
-      });
-      
-      orderItemsContainer.appendChild(newItem);
-    }
-
-    // Function to update an order item
-    function updateOrderItem(select) {
-      const selectedOption = select.options[select.selectedIndex];
-      if (selectedOption.value) {
-        const price = parseFloat(selectedOption.dataset.price);
-        select.dataset.price = price;
-      }
-    }
-
-    // Function to calculate total amount
-    function calculateTotal() {
-      totalAmount = 0;
-      const selects = orderItemsContainer.querySelectorAll('.order-select');
-      
-      selects.forEach(select => {
-        if (select.value) {
-          totalAmount += parseFloat(select.dataset.price);
+        requestsContainer.appendChild(card);
+        
+        // Play notification sound for new requests
+        const notificationSound = document.querySelector('.notification-sound');
+        if (notificationSound) {
+          notificationSound.currentTime = 0;
+          notificationSound.play().catch(e => console.log("Audio play failed:", e));
         }
+      }
+  
+      // Helper function to format action text
+      function formatAction(action) {
+        return action.split('-').map(word => 
+          word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
+      }
+      
+      // Helper function to get time ago
+      function getTimeAgo(timestamp) {
+        const seconds = Math.floor((Date.now() - timestamp) / 1000);
+        
+        if (seconds < 60) return 'Just now';
+        if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
+        if (seconds < 86400) return `${Math.floor(seconds / 3600)} hour${seconds >= 7200 ? 's' : ''} ago`;
+        return `${Math.floor(seconds / 86400)} day${seconds >= 172800 ? 's' : ''} ago`;
+      }
+  
+      // Combine all items for the order dropdown
+      const allMenuItems = [
+        ...menuItems,
+        ...flavors.map(flavor => ({
+          name: `${flavor.name} (Unli Wings)`, 
+          price: 299.00,
+          category: "Unli Wings"
+        }))
+      ];
+  
+      // Function to populate order dropdown
+      function populateOrderDropdown(selectElement) {
+        selectElement.innerHTML = '<option value="">Select an item</option>';
+        
+        const categories = {};
+        allMenuItems.forEach(item => {
+          if (!categories[item.category]) {
+            categories[item.category] = [];
+          }
+          categories[item.category].push(item);
+        });
+  
+        Object.entries(categories).forEach(([category, items]) => {
+          const optgroup = document.createElement('optgroup');
+          optgroup.label = category;
+          
+          items.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.name;
+            option.textContent = `${item.name} - ₱${item.price.toFixed(2)}`;
+            option.dataset.price = item.price;
+            optgroup.appendChild(option);
+          });
+          
+          selectElement.appendChild(optgroup);
+        });
+      }
+  
+      // Function to add a new order item
+      function addOrderItem() {
+        const newItem = orderItemTemplate.cloneNode(true);
+        newItem.style.display = 'block';
+        
+        const select = newItem.querySelector('.order-select');
+        populateOrderDropdown(select);
+        
+        select.addEventListener('change', (e) => {
+          updateOrderItem(e.target);
+          calculateTotal();
+        });
+        
+        newItem.querySelector('.remove-order').addEventListener('click', (e) => {
+          e.target.closest('.order-item').remove();
+          calculateTotal();
+        });
+        
+        orderItemsContainer.appendChild(newItem);
+      }
+  
+      function updateOrderItem(select) {
+        const selectedOption = select.options[select.selectedIndex];
+        if (selectedOption.value) {
+          const price = parseFloat(selectedOption.dataset.price);
+          select.dataset.price = price;
+        }
+      }
+  
+      function calculateTotal() {
+        totalAmount = 0;
+        const selects = orderItemsContainer.querySelectorAll('.order-select');
+        
+        selects.forEach(select => {
+          if (select.value) {
+            totalAmount += parseFloat(select.dataset.price);
+          }
+        });
+        
+        totalAmountEl.textContent = `₱${totalAmount.toFixed(2)}`;
+        calculateChange();
+      }
+  
+      function calculateChange() {
+        const paidAmount = parseFloat(paidAmountEl.value) || 0;
+        const change = paidAmount - totalAmount;
+        changeAmountEl.textContent = `₱${change.toFixed(2)}`;
+      }
+  
+      function resetBillOutForm() {
+        orderItemsContainer.innerHTML = '';
+        document.getElementById('pax').value = '';
+        paidAmountEl.value = '';
+        totalAmount = 0;
+        totalAmountEl.textContent = '₱0.00';
+        changeAmountEl.textContent = '₱0.00';
+        currentBillOutRequest = null;
+      }
+  
+      function submitBillOut() {
+        if (totalAmount <= 0) {
+          alert('Please add at least one order item');
+          return;
+        }
+  
+        const pax = document.getElementById('pax').value;
+        const paidAmount = parseFloat(paidAmountEl.value);
+        
+        if (!pax || isNaN(paidAmount)) {
+          alert('Please fill in all required fields');
+          return;
+        }
+  
+        const orders = [];
+        const selects = orderItemsContainer.querySelectorAll('.order-select');
+        
+        selects.forEach(select => {
+          if (select.value) {
+            orders.push({
+              item: select.value,
+              price: parseFloat(select.dataset.price)
+            });
+          }
+        });
+  
+        update(ref(database, `requests/${currentBillOutRequest.id}`), { 
+          status: 'completed',
+          completedAt: Date.now(),
+          completedBy: currentUser?.uid || 'staff',
+          billDetails: {
+            pax: parseInt(pax),
+            orders: orders,
+            totalAmount: totalAmount,
+            paidAmount: paidAmount,
+            change: paidAmount - totalAmount
+          }
+        }).then(() => {
+          billOutModal.style.display = 'none';
+          resetBillOutForm();
+        });
+      }
+  
+      // Event Listeners
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        logoutModal.style.display = 'flex';
       });
-      
-      totalAmountEl.textContent = `₱${totalAmount.toFixed(2)}`;
-      calculateChange();
-    }
-
-    // Function to calculate change
-    function calculateChange() {
-      const paidAmount = parseFloat(paidAmountEl.value) || 0;
-      const change = paidAmount - totalAmount;
-      changeAmountEl.textContent = `₱${change.toFixed(2)}`;
-    }
-
-    // Function to reset the bill out form
-    function resetBillOutForm() {
-      orderItemsContainer.innerHTML = '';
-      document.getElementById('pax').value = '';
-      paidAmountEl.value = '';
-      totalAmount = 0;
-      totalAmountEl.textContent = '₱0.00';
-      changeAmountEl.textContent = '₱0.00';
-      currentBillOutRequest = null;
-    }
-
-    // Function to submit the bill out
-    function submitBillOut() {
-      if (totalAmount <= 0) {
-        alert('Please add at least one order item');
-        return;
-      }
-
-      const pax = document.getElementById('pax').value;
-      const paidAmount = parseFloat(paidAmountEl.value);
-      
-      if (!pax || isNaN(paidAmount)) {
-        alert('Please fill in all required fields');
-        return;
-      }
-
-      const orders = [];
-      const selects = orderItemsContainer.querySelectorAll('.order-select');
-      
-      selects.forEach(select => {
-        if (select.value) {
-          orders.push({
-            item: select.value,
-            price: parseFloat(select.dataset.price)
+  
+      document.getElementById('cancelLogout').addEventListener('click', () => {
+        logoutModal.style.display = 'none';
+      });
+  
+      document.getElementById('confirmLogout').addEventListener('click', () => {
+        signOut(auth).then(() => {
+          window.location.href = 'chixlogin.html';
+        });
+      });
+  
+      document.getElementById('cancelComplete').addEventListener('click', () => {
+        completeModal.style.display = 'none';
+        currentRequestId = null;
+      });
+  
+      document.getElementById('confirmComplete').addEventListener('click', () => {
+        if (currentRequestId) {
+          update(ref(database, `requests/${currentRequestId}`), { 
+            status: 'completed',
+            completedAt: Date.now(),
+            completedBy: currentUser?.uid || 'staff'
+          }).then(() => {
+            completeModal.style.display = 'none';
+            currentRequestId = null;
           });
         }
       });
-
-      // Update the request in Firebase
-      update(ref(database, `requests/${currentBillOutRequest.id}`), { 
-        status: 'completed',
-        completedAt: Date.now(),
-        completedBy: currentUser?.uid || 'staff',
-        billDetails: {
-          pax: parseInt(pax),
-          orders: orders,
-          totalAmount: totalAmount,
-          paidAmount: paidAmount,
-          change: paidAmount - totalAmount
-        }
-      }).then(() => {
-        displayedRequests.delete(currentBillOutRequest.id);
+  
+      addOrderBtn.addEventListener('click', addOrderItem);
+      paidAmountEl.addEventListener('input', calculateChange);
+      submitBillOutBtn.addEventListener('click', submitBillOut);
+      cancelBillOutBtn.addEventListener('click', () => {
         billOutModal.style.display = 'none';
         resetBillOutForm();
       });
-    }
-
-    // Modify the complete request handler to show bill out modal when needed
-    document.querySelectorAll('.btn-complete').forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.stopPropagation();
-        currentRequestId = button.dataset.id;
-        const card = button.closest('.request-card');
-        const tableNumber = card.querySelector('h3').textContent.match(/Table (\d+)/)[1];
-        const requestType = card.querySelector('h3').textContent.split(' - ')[1];
-        
-        if (requestType === 'Bill Out') {
-          // Show bill out modal
-          currentBillOutRequest = {
-            id: currentRequestId,
-            tableNumber: tableNumber
-          };
-          billOutTableNumber.textContent = tableNumber;
-          billOutModal.style.display = 'flex';
-          addOrderItem(); // Add first order item by default
-        } else {
-          // Show regular completion modal
-          document.getElementById('completeTableNumber').textContent = tableNumber;
-          document.getElementById('completeRequestType').textContent = requestType;
-          completeModal.style.display = 'flex';
-        }
-      });
-    });
-
-    // Add event listeners for bill out modal
-    addOrderBtn.addEventListener('click', addOrderItem);
-    paidAmountEl.addEventListener('input', calculateChange);
-    submitBillOutBtn.addEventListener('click', submitBillOut);
-    cancelBillOutBtn.addEventListener('click', () => {
-      billOutModal.style.display = 'none';
-      resetBillOutForm();
-    });
-
-    // Rest of your existing functions (loadRequests, formatAction, getTimeAgo, etc.)
-    // ... [Previous implementation remains the same]
-    
-    // Helper function to format action text
-    function formatAction(action) {
-      return action.split('-').map(word => 
-        word.charAt(0).toUpperCase() + word.slice(1)
-      ).join(' ');
-    }
-    
-    // Helper function to get time ago
-    function getTimeAgo(timestamp) {
-      const seconds = Math.floor((Date.now() - timestamp) / 1000);
-      
-      if (seconds < 60) return 'Just now';
-      if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
-      if (seconds < 86400) return `${Math.floor(seconds / 3600)} hour${seconds >= 7200 ? 's' : ''} ago`;
-      return `${Math.floor(seconds / 86400)} day${seconds >= 172800 ? 's' : ''} ago`;
-    }
-
-    // Modal Event Listeners
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      logoutModal.style.display = 'flex';
-    });
-
-    document.getElementById('cancelLogout').addEventListener('click', () => {
-      logoutModal.style.display = 'none';
-    });
-
-    document.getElementById('confirmLogout').addEventListener('click', () => {
-      signOut(auth).then(() => {
-        window.location.href = 'chixlogin.html';
-      });
-    });
-
-    document.getElementById('cancelComplete').addEventListener('click', () => {
-      completeModal.style.display = 'none';
-      currentRequestId = null;
-    });
-
-    document.getElementById('confirmComplete').addEventListener('click', () => {
-      if (currentRequestId) {
-        update(ref(database, `requests/${currentRequestId}`), { 
-          status: 'completed',
-          completedAt: Date.now(),
-          completedBy: currentUser?.uid || 'staff'
-        }).then(() => {
-          displayedRequests.delete(currentRequestId);
-          completeModal.style.display = 'none';
+  
+      document.querySelectorAll('.close-modal').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.modal').forEach(modal => {
+            modal.style.display = 'none';
+          });
           currentRequestId = null;
         });
-      }
-    });
-
-    // Close modals when clicking outside or on X
-    document.querySelectorAll('.close-modal').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.modal').forEach(modal => {
-          modal.style.display = 'none';
-        });
-        currentRequestId = null;
       });
-    });
-
-    window.addEventListener('click', (e) => {
-      if (e.target.classList.contains('modal')) {
-        e.target.style.display = 'none';
-        currentRequestId = null;
-      }
-    });
+  
+      window.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal')) {
+          e.target.style.display = 'none';
+          currentRequestId = null;
+        }
+      });
   </script>
 </body>
 </html>
