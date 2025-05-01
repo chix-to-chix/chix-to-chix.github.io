@@ -76,12 +76,11 @@
   </main>
 
   <!-- Firebase SDK -->
-  <script type="module">
+   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getDatabase, ref, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
   
-    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCuZXC1J1R15kejNO7_4430qM2qkcdcxQE",
       authDomain: "chix-to-chix.firebaseapp.com",
@@ -92,70 +91,76 @@
       appId: "1:913059913710:web:754b9101988c61de8478ff",
       measurementId: "G-862F051QMV"
     };
-  
-    try {
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-      const database = getDatabase(app);
-      const auth = getAuth(app);
-  
-      // Authenticate anonymously
-      signInAnonymously(auth)
-        .then(() => {
-          console.log("Anonymous authentication successful");
-          setupNotificationSystem();
-        })
-        .catch((error) => {
-          console.error("Anonymous auth failed:", error);
-          alert("Please refresh the page to try again.");
-        });
-  
-      function setupNotificationSystem() {
-        const modal = document.getElementById('tableModal');
-        const closeModal = document.querySelector('.close-modal');
-        const submitTable = document.getElementById('submitTable');
-        const tableNumberInput = document.getElementById('tableNumber');
-  
-        // Notification items
-        document.querySelectorAll('.notification-item').forEach(item => {
-          item.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const action = item.dataset.action;
-            document.getElementById('modalTitle').textContent = `Table Number (${item.textContent})`;
-            modal.style.display = 'block';
-            
-            submitTable.onclick = () => {
-              const tableNumber = tableNumberInput.value;
-              if (tableNumber) {
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Fix for bell button functionality
+      const bell = document.querySelector('.notification-bell');
+      const dropdown = document.querySelector('.notification-dropdown');
+      const modal = document.getElementById('tableModal');
+      const closeModal = document.querySelector('.close-modal');
+      
+      // Toggle dropdown when bell is clicked
+      bell.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+      });
+
+      // Close dropdown when clicking elsewhere
+      document.addEventListener('click', (e) => {
+        if (!bell.contains(e.target) {
+          dropdown.style.display = 'none';
+        }
+      });
+
+      // Handle notification items
+      document.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const action = e.target.dataset.action;
+          document.getElementById('modalTitle').textContent = `Table Number (${e.target.textContent})`;
+          modal.style.display = 'block';
+          dropdown.style.display = 'none';
+          
+          // Set up submit button
+          document.getElementById('submitTable').onclick = async () => {
+            const tableNumber = document.getElementById('tableNumber').value;
+            if (tableNumber) {
+              try {
+                // Sign in anonymously first
+                await signInAnonymously(auth);
+                
+                // Send request to Firebase
                 const requestsRef = ref(database, 'requests');
-                push(requestsRef, {
+                await push(requestsRef, {
                   action: action,
                   tableNumber: tableNumber,
                   timestamp: serverTimestamp(),
                   status: 'pending'
-                }).then(() => {
-                  modal.style.display = 'none';
-                  tableNumberInput.value = '';
-                  alert(`Request sent for table ${tableNumber}`);
-                }).catch((error) => {
-                  console.error("Error sending request:", error);
-                  alert("Error sending request. Please try again.");
                 });
+                
+                // Reset form
+                modal.style.display = 'none';
+                document.getElementById('tableNumber').value = '';
+                alert(`Request sent for table ${tableNumber}`);
+              } catch (error) {
+                console.error("Error:", error);
+                alert("Failed to send request. Please try again.");
               }
-            };
-          });
+            }
+          };
         });
-  
-        // Close modal
-        closeModal.addEventListener('click', () => {
-          modal.style.display = 'none';
-        });
-      }
-  
-    } catch (error) {
-      console.error("Firebase initialization failed:", error);
-      alert("Failed to initialize app. Please refresh the page.");
-    }
+      });
+
+      // Close modal
+      closeModal.addEventListener('click', () => {
+        modal.style.display = 'none';
+      });
+    });
   </script>
   <script src="script.js"></script>
 </body>
