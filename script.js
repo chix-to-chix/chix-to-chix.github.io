@@ -36,12 +36,13 @@ export const menuItems = [
   { name: "Extra Sauce", category: "Extras", price: "₱25.00", description: "Special chicken sauce", image: "sample.jpg" }
 ];
 
-document.addEventListener('DOMContentLoaded', function() {
+export const unliPrice = 299.00;
+
+export function initializeCustomerMenu() {
   const allItems = [...menuItems];
   const menuList = document.getElementById("menuList");
   const searchBar = document.getElementById("searchBar");
   const categoryButtons = document.querySelectorAll(".category-tabs button");
-  const unliPrice = "₱299.00";
   const priceHeader = document.querySelector(".unli-price-header");
 
   function renderMenu(items, category = "all") {
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (category === "Unli Wings") {
       priceHeader.style.display = "block";
-      priceHeader.style.margin = "1.5rem auto";
+      priceHeader.innerHTML = `Unlimited Wings - ₱${unliPrice.toFixed(2)}`;
     } else {
       priceHeader.style.display = "none";
     }
@@ -63,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <h3>Unli Wings</h3>
           <p>All-you-can-eat chicken wings</p>
           <div class="details">
-            <span class="price">${unliPrice}</span>
+            <span class="price">₱${unliPrice.toFixed(2)}</span>
           </div>
         </div>
       `;
@@ -85,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     } 
     else if (category === "Unli Wings") {
-      items.forEach(item => {
+      flavors.forEach(item => {
         const card = createCard(item);
         menuList.appendChild(card);
       });
@@ -104,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const priceOrRating = item.rating 
       ? `<div class="rating">${"★".repeat(Math.floor(item.rating))}${item.rating % 1 >= 0.5 ? "½" : ""}</div>`
-      : `<span class="price">${item.price}</span>`;
+      : `<span class="price">₱${item.price.toFixed(2)}</span>`;
     
     card.innerHTML = `
       <img src="img/${item.image}" alt="${item.name}" />
@@ -164,4 +165,4 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
-});
+}
