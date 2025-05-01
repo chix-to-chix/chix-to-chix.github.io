@@ -315,6 +315,7 @@ h1 .highlight {
   width: 90%;
   max-width: 400px;
   position: relative;
+  box-sizing: border-box;
 }
 
 .close-modal {
@@ -327,11 +328,13 @@ h1 .highlight {
 
 #tableNumber {
   width: 100%;
-  padding: 12px;
+  padding: 12px 15px;
   margin: 15px 0;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
 }
 
 #submitTable {
@@ -344,6 +347,8 @@ h1 .highlight {
   font-weight: 600;
   width: 100%;
   transition: var(--transition);
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
 }
 
 #submitTable:hover {
