@@ -10,6 +10,27 @@
 </head>
 <body>
   <div class="texture-overlay"></div>
+  
+  <!-- Notification Bell -->
+  <div class="notification-bell">
+    <i class="fas fa-bell"></i>
+    <span class="notification-count">0</span>
+    <div class="notification-dropdown">
+      <div class="notification-item" data-action="call-server">Call a Server</div>
+      <div class="notification-item" data-action="bill-out">Bill Out</div>
+    </div>
+  </div>
+
+  <!-- Table Number Modal -->
+  <div class="modal" id="tableModal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h3>Enter Table Number</h3>
+      <input type="number" id="tableNumber" placeholder="e.g. 12" min="1">
+      <button id="submitTable">Submit</button>
+    </div>
+  </div>
+
   <main class="app-container">
     <header class="app-header">
       <div class="logo-container">
@@ -54,6 +75,7 @@
     </section>
   </main>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
