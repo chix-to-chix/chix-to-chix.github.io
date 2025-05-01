@@ -420,6 +420,10 @@ h1 .highlight {
     height: 45px;
     font-size: 1.3rem;
   }
+
+  .notification-dropdown {
+    width: 210px;
+  }
   
   .modal-content {
     padding: 20px;
