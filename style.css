@@ -439,6 +439,15 @@ h1 .highlight {
   color: var(--primary-light);
 }
 
+.category-header {
+  grid-column: 1 / -1;
+  font-size: 1.5rem;
+  color: var(--secondary);
+  margin: 1rem 0 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--primary-light);
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .app-container {
