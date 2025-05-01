@@ -134,12 +134,15 @@
       }
     });
 
-    // Login with staff credentials
-    signInWithEmailAndPassword(auth, "staff@chix.com", "yourSecurePassword")
-      .catch((error) => {
-        console.error("Staff login failed:", error);
-        window.location.href = 'https://chix-to-chix.github.io/chixlogin';
-      });
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        window.location.href = 'chixlogin.html';
+      } else if (user.email && user.email.startsWith('admin')) {
+        // Admins shouldn't be on staff page - redirect to admin
+        window.location.href = 'admin.html';
+      }
+      // Staff users stay on the page
+    });
 
     // Logout
     logoutBtn.addEventListener('click', () => {
