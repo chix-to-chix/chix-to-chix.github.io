@@ -93,43 +93,55 @@
   </div>
 
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCuZXC1J1R15kejNO7_4430qM2qkcdcxQE",
-    authDomain: "chix-to-chix.firebaseapp.com",
-    projectId: "chix-to-chix",
-    storageBucket: "chix-to-chix.appspot.com",
-    messagingSenderId: "913059913710",
-    appId: "1:913059913710:web:754b9101988c61de8478ff",
-    measurementId: "G-862F051QMV"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  document.getElementById('loginBtn').addEventListener('click', function() {
-    const email = document.getElementById('username').value + '@chix.com';
-    const password = document.getElementById('password').value;
-    const isAdmin = document.getElementById('adminBtn').classList.contains('active');
-    
-    if (email && password) {
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          if (isAdmin) {
-            window.location.href = 'admin.html';
-          } else {
-            window.location.href = 'staff.html';
-          }
-        })
-        .catch((error) => {
-          alert('Login failed: ' + error.message);
-        });
-    } else {
-      alert('Please enter username and password');
-    }
-  });
-</script>
+    // Import the functions you need from the SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword,
+      setPersistence,
+      browserSessionPersistence
+    } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+  
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCuZXC1J1R15kejNO7_4430qM2qkcdcxQE",
+      authDomain: "chix-to-chix.firebaseapp.com",
+      projectId: "chix-to-chix",
+      storageBucket: "chix-to-chix.appspot.com",
+      messagingSenderId: "913059913710",
+      appId: "1:913059913710:web:754b9101988c61de8478ff",
+      measurementId: "G-862F051QMV"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+  
+    document.getElementById('loginBtn').addEventListener('click', async function() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const isAdmin = document.getElementById('adminBtn').classList.contains('active');
+      
+      if (!username || !password) {
+        alert('Please enter both username and password');
+        return;
+      }
+  
+      try {
+        await setPersistence(auth, browserSessionPersistence);
+        const email = isAdmin ? `${username}@chix.com` : `${username}@staff.chix.com`;
+        await signInWithEmailAndPassword(auth, email, password);
+        
+        if (isAdmin) {
+          window.location.href = 'admin.html';
+        } else {
+          window.location.href = 'staff.html';
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        alert(`Login failed: ${error.message}`);
+      }
+    });
+  </script>
 </body>
 </html>
