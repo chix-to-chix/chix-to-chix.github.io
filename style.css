@@ -357,11 +357,14 @@ h1 .highlight {
 
 .notification-toast {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  max-width: 400px;
+  margin: 0 auto;
   background: var(--primary);
   color: white;
-  padding: 15px 25px;
+  padding: 15px 20px;
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.2);
   display: flex;
@@ -386,16 +389,22 @@ h1 .highlight {
 }
 
 .notification-toast i {
-  margin-right: 10px;
+  margin-right: 12px;
   font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.notification-message {
+  flex-grow: 1;
+  font-size: 0.95rem;
 }
 
 .notification-progress {
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 4px;
-  background: rgba(255,255,255,0.5);
+  height: 3px;
+  background: rgba(255,255,255,0.3);
   width: 100%;
   border-radius: 0 0 10px 10px;
 }
@@ -433,6 +442,13 @@ h1 .highlight {
   
   .unli-price-header::after {
     width: 80px;
+  }
+
+  .notification-toast {
+    left: auto;
+    right: 30px;
+    bottom: 30px;
+    margin: 0;
   }
 }
 
