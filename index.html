@@ -77,6 +77,11 @@
       <!-- Menu items will be inserted by JavaScript -->
     </section>
   </main>
+  <script type="module">
+    import { initializeCustomerMenu } from './script.js';
+    
+    document.addEventListener('DOMContentLoaded', initializeCustomerMenu);
+  </script>
   <script src="firebase.js"></script>
   <script src="script.js"></script>
 </body>
