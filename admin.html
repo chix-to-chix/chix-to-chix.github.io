@@ -143,91 +143,87 @@
       measurementId: "G-862F051QMV"
     };
   
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
-    const auth = getAuth(app);
+    try {
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
+      const auth = getAuth(app);
   
-    // Authentication check
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = 'chixlogin.html';
-      } else if (user.email && !user.email.startsWith('admin')) {
-        window.location.href = 'staff.html';
-      } else {
-        // Load data when authenticated
-        filterData();
-      }
-    });
-
-    // Logout
-    logoutBtn.addEventListener('click', () => {
-      signOut(auth).then(() => {
-        window.location.href = 'https://chix-to-chix.github.io/chixlogin';
-      });
-    });
-
-    // Set default dates
-    const today = new Date();
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(today.getDate() - 7);
-    
-    document.getElementById('startDate').valueAsDate = oneWeekAgo;
-    document.getElementById('endDate').valueAsDate = today;
-
-    // Load data
-    function filterData() {
-      const startDate = new Date(document.getElementById('startDate').value);
-      const endDate = new Date(document.getElementById('endDate').value);
-      
-      const completedBillsRef = ref(database, 'completedBills');
-      onValue(completedBillsRef, (snapshot) => {
-        const bills = snapshot.val();
-        salesData.innerHTML = '';
-        
-        let totalSales = 0;
-        let tableCount = 0;
-        let totalPax = 0;
-        let todayTotal = 0;
-        
-        if (bills) {
-          Object.entries(bills).forEach(([id, bill]) => {
-            const billDate = new Date(bill.timestamp);
-            
-            if (billDate >= startDate && billDate <= endDate) {
-              // Add to table
-              const row = document.createElement('tr');
-              row.innerHTML = `
-                <td>${billDate.toLocaleDateString()}</td>
-                <td>${bill.tableNumber}</td>
-                <td>${bill.pax}</td>
-                <td>₱${bill.totalAmount?.toFixed(2) || '0.00'}</td>
-                <td>₱${bill.paidAmount?.toFixed(2) || '0.00'}</td>
-                <td>₱${(bill.paidAmount - bill.totalAmount)?.toFixed(2) || '0.00'}</td>
-              `;
-              salesData.appendChild(row);
-              
-              // Calculate stats
-              totalSales += bill.totalAmount || 0;
-              tableCount++;
-              totalPax += parseInt(bill.pax) || 0;
-              
-              // Check if today
-              if (billDate.toDateString() === today.toDateString()) {
-                todayTotal += bill.totalAmount || 0;
-              }
-            }
-          });
+      onAuthStateChanged(auth, (user) => {
+        if (!user) {
+          window.location.href = 'chixlogin.html';
+        } else if (user.email && !user.email.startsWith('admin')) {
+          window.location.href = 'staff.html';
+        } else {
+          filterData();
         }
-        
-        // Update stats
-        todaySales.textContent = `₱${todayTotal.toFixed(2)}`;
-        totalTables.textContent = tableCount;
-        avgPax.textContent = tableCount > 0 ? Math.round(totalPax / tableCount) : 0;
       });
+  
+      // Set default dates
+      const today = new Date();
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(today.getDate() - 7);
+      
+      document.getElementById('startDate').valueAsDate = oneWeekAgo;
+      document.getElementById('endDate').valueAsDate = today;
+  
+      function filterData() {
+        const startDate = new Date(document.getElementById('startDate').value);
+        const endDate = new Date(document.getElementById('endDate').value);
+        
+        const completedBillsRef = ref(database, 'completedBills');
+        onValue(completedBillsRef, (snapshot) => {
+          const bills = snapshot.val();
+          const salesData = document.getElementById('salesData');
+          salesData.innerHTML = '';
+          
+          let totalSales = 0;
+          let tableCount = 0;
+          let totalPax = 0;
+          let todayTotal = 0;
+          
+          if (bills) {
+            Object.entries(bills).forEach(([id, bill]) => {
+              const billDate = new Date(bill.timestamp);
+              
+              if (billDate >= startDate && billDate <= endDate) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                  <td>${billDate.toLocaleDateString()}</td>
+                  <td>${bill.tableNumber}</td>
+                  <td>${bill.pax}</td>
+                  <td>₱${bill.totalAmount?.toFixed(2) || '0.00'}</td>
+                  <td>₱${bill.paidAmount?.toFixed(2) || '0.00'}</td>
+                  <td>₱${(bill.paidAmount - bill.totalAmount)?.toFixed(2) || '0.00'}</td>
+                `;
+                salesData.appendChild(row);
+                
+                totalSales += bill.totalAmount || 0;
+                tableCount++;
+                totalPax += parseInt(bill.pax) || 0;
+                
+                if (billDate.toDateString() === today.toDateString()) {
+                  todayTotal += bill.totalAmount || 0;
+                }
+              }
+            });
+          }
+          
+          document.getElementById('todaySales').textContent = `₱${todayTotal.toFixed(2)}`;
+          document.getElementById('totalTables').textContent = tableCount;
+          document.getElementById('avgPax').textContent = tableCount > 0 ? Math.round(totalPax / tableCount) : 0;
+        });
+      }
+  
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        signOut(auth).then(() => {
+          window.location.href = 'chixlogin.html';
+        });
+      });
+  
+    } catch (error) {
+      console.error("Firebase initialization failed:", error);
+      alert("Failed to initialize app. Please refresh the page.");
     }
-
-    // Initial load
-    filterData();
   </script>
   <script src="script.js"></script>
 </body>
