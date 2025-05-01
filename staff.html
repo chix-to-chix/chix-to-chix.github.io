@@ -623,10 +623,19 @@
   let currentBillOutRequest = null;
   let totalAmount = 0;
 
-  // Simplified menu items for billing
+  // Convert all prices to numbers and create simplified menu
   const billingMenuItems = [
-    { name: "Unli Wings (All Flavors)", price: unliPrice, category: "Unli Wings" },
-    ...menuItems.filter(item => item.category !== "Unli Wings")
+    { 
+      name: "Unli Wings (All Flavors)", 
+      price: typeof unliPrice === 'string' ? parseFloat(unliPrice.replace(/[^\d.]/g, '')) : unliPrice,
+      category: "Unli Wings" 
+    },
+    ...menuItems
+      .filter(item => item.category !== "Unli Wings")
+      .map(item => ({
+        ...item,
+        price: typeof item.price === 'string' ? parseFloat(item.price.replace(/[^\d.]/g, '')) : item.price
+      }))
   ];
 
   // Authentication state handler
