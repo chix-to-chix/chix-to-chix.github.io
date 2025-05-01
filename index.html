@@ -153,66 +153,6 @@
       }
     });
   </script>
-  <script>
-    // Notification System
-    const bell = document.querySelector('.notification-bell');
-    const dropdown = document.querySelector('.notification-dropdown');
-    const modal = document.getElementById('tableModal');
-    const closeModal = document.querySelector('.close-modal');
-    const submitTable = document.getElementById('submitTable');
-    const tableNumberInput = document.getElementById('tableNumber');
-    const modalTitle = document.getElementById('modalTitle');
-
-    let currentAction = '';
-
-    // Toggle dropdown
-    bell.addEventListener('click', (e) => {
-      e.stopPropagation();
-      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-    });
-
-    // Close dropdown when clicking elsewhere
-    document.addEventListener('click', () => {
-      dropdown.style.display = 'none';
-    });
-
-    // Handle notification items
-    document.querySelectorAll('.notification-item').forEach(item => {
-      item.addEventListener('click', () => {
-        currentAction = item.dataset.action;
-        modalTitle.textContent = `Table Number (${item.textContent})`;
-        modal.style.display = 'block';
-        dropdown.style.display = 'none';
-      });
-    });
-
-    // Close modal
-    closeModal.addEventListener('click', () => {
-      modal.style.display = 'none';
-    });
-
-    // Submit table number
-    submitTable.addEventListener('click', () => {
-      const tableNumber = tableNumberInput.value;
-      if (tableNumber) {
-        // Send to Firebase
-        const requestRef = database.ref('requests').push();
-        requestRef.set({
-          action: currentAction,
-          tableNumber: tableNumber,
-          timestamp: firebase.database.ServerValue.TIMESTAMP,
-          status: 'pending'
-        }).then(() => {
-          modal.style.display = 'none';
-          tableNumberInput.value = '';
-          alert(`Request sent for table ${tableNumber}`);
-        }).catch(error => {
-          console.error("Error sending request:", error);
-          alert("Error sending request. Please try again.");
-        });
-      }
-    });
-  </script>
   <script src="script.js"></script>
 </body>
 </html>
