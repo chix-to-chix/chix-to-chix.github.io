@@ -417,6 +417,28 @@ h1 .highlight {
   transition: width 0.1s linear;
 }
 
+.request-card {
+  transition: all 0.3s ease;
+  opacity: 1;
+}
+
+.request-card.removing {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-light);
+}
+
+.empty-state i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--primary-light);
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .app-container {
