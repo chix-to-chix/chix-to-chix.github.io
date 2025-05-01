@@ -202,21 +202,98 @@
       display: none;
     }
     
-    /* New Notification Badge */
-    .notification-badge {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      background: var(--accent);
-      color: white;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
       justify-content: center;
-      font-size: 0.75rem;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: var(--shadow-lg);
+      animation: modalFadeIn 0.3s ease-out;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .modal-title {
+      font-size: 1.5rem;
+      color: var(--secondary);
+      margin: 0;
+    }
+    
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-light);
+    }
+    
+    .modal-body {
+      margin-bottom: 2rem;
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+    
+    .modal-btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
       font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .modal-btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+    }
+    
+    .modal-btn-primary:hover {
+      background: var(--secondary);
+    }
+    
+    .modal-btn-secondary {
+      background: var(--bg-light);
+      color: var(--text);
+      border: 1px solid var(--text-light);
+    }
+    
+    .modal-btn-secondary:hover {
+      border-color: var(--text);
+    }
+    
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     
     /* Mobile Responsiveness */
@@ -236,22 +313,10 @@
       #logoutBtn {
         padding: 0.5rem 1rem;
       }
-    }
-    
-    /* Animations */
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
+      
+      .modal-content {
+        padding: 1.5rem;
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    .request-card {
-      animation: slideIn 0.3s ease-out forwards;
     }
   </style>
 </head>
@@ -271,6 +336,42 @@
     </div>
     
     <audio class="notification-sound" src="notification.mp3" preload="auto"></audio>
+  </div>
+
+  <!-- Logout Confirmation Modal -->
+  <div class="modal" id="logoutModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Confirm Logout</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to logout, <span id="usernameDisplay"></span>?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="cancelLogout">Cancel</button>
+        <button class="modal-btn modal-btn-primary" id="confirmLogout">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Complete Request Modal -->
+  <div class="modal" id="completeModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Complete Request</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to mark this request as completed?</p>
+        <p><strong>Table:</strong> <span id="completeTableNumber"></span></p>
+        <p><strong>Request:</strong> <span id="completeRequestType"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="cancelComplete">Cancel</button>
+        <button class="modal-btn modal-btn-primary" id="confirmComplete">Complete</button>
+      </div>
+    </div>
   </div>
 
   <script type="module">
@@ -294,6 +395,12 @@
     const database = getDatabase(app);
     const auth = getAuth(app);
 
+    // DOM Elements
+    const logoutModal = document.getElementById('logoutModal');
+    const completeModal = document.getElementById('completeModal');
+    let currentRequestId = null;
+    let currentUser = null;
+
     // Track displayed requests
     const displayedRequests = new Set();
 
@@ -304,6 +411,9 @@
       } else if (user.email && user.email.startsWith('admin')) {
         window.location.href = 'admin.html';
       } else {
+        currentUser = user;
+        document.getElementById('usernameDisplay').textContent = 
+          user.displayName || user.email || 'User';
         loadRequests();
       }
     });
@@ -366,9 +476,6 @@
                 <button class="btn-complete" data-id="${id}">
                   <i class="fas fa-check"></i> Complete
                 </button>
-                <button class="btn-details" data-id="${id}">
-                  <i class="fas fa-info-circle"></i> Details
-                </button>
               </div>
             `;
             fragment.appendChild(card);
@@ -409,23 +516,14 @@
         document.querySelectorAll('.btn-complete').forEach(button => {
           button.addEventListener('click', (e) => {
             e.stopPropagation();
-            const requestId = button.dataset.id;
-            update(ref(database, `requests/${requestId}`), { 
-              status: 'completed',
-              completedAt: Date.now() 
-            }).then(() => {
-              displayedRequests.delete(requestId);
-            });
-          });
-        });
-        
-        // Add event listeners to details buttons
-        document.querySelectorAll('.btn-details').forEach(button => {
-          button.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const requestId = button.dataset.id;
-            // You can implement details view here
-            alert('Details view would open for request: ' + requestId);
+            currentRequestId = button.dataset.id;
+            const card = button.closest('.request-card');
+            const tableNumber = card.querySelector('h3').textContent.match(/Table (\d+)/)[1];
+            const requestType = card.querySelector('h3').textContent.split(' - ')[1];
+            
+            document.getElementById('completeTableNumber').textContent = tableNumber;
+            document.getElementById('completeRequestType').textContent = requestType;
+            completeModal.style.display = 'flex';
           });
         });
       });
@@ -448,12 +546,54 @@
       return `${Math.floor(seconds / 86400)} day${seconds >= 172800 ? 's' : ''} ago`;
     }
 
-    // Logout functionality
+    // Modal Event Listeners
     document.getElementById('logoutBtn').addEventListener('click', () => {
-      if (confirm('Are you sure you want to logout?')) {
-        signOut(auth).then(() => {
-          window.location.href = 'chixlogin.html';
+      logoutModal.style.display = 'flex';
+    });
+
+    document.getElementById('cancelLogout').addEventListener('click', () => {
+      logoutModal.style.display = 'none';
+    });
+
+    document.getElementById('confirmLogout').addEventListener('click', () => {
+      signOut(auth).then(() => {
+        window.location.href = 'chixlogin.html';
+      });
+    });
+
+    document.getElementById('cancelComplete').addEventListener('click', () => {
+      completeModal.style.display = 'none';
+      currentRequestId = null;
+    });
+
+    document.getElementById('confirmComplete').addEventListener('click', () => {
+      if (currentRequestId) {
+        update(ref(database, `requests/${currentRequestId}`), { 
+          status: 'completed',
+          completedAt: Date.now(),
+          completedBy: currentUser?.uid || 'staff'
+        }).then(() => {
+          displayedRequests.delete(currentRequestId);
+          completeModal.style.display = 'none';
+          currentRequestId = null;
         });
+      }
+    });
+
+    // Close modals when clicking outside or on X
+    document.querySelectorAll('.close-modal').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.modal').forEach(modal => {
+          modal.style.display = 'none';
+        });
+        currentRequestId = null;
+      });
+    });
+
+    window.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal')) {
+        e.target.style.display = 'none';
+        currentRequestId = null;
       }
     });
   </script>
