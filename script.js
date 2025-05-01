@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-  const flavors = [
+  export const flavors = [
     { name: "Classic", category: "Unli Wings", description: "Original fried chicken flavor", rating: 4, image: "sample.jpg" },
     { name: "Cheese", category: "Unli Wings", description: "Creamy cheese flavor", rating: 4.5, image: "sample.jpg" },
     { name: "Garlic Parmesan", category: "Unli Wings", description: "Savory garlic with parmesan", rating: 5, image: "sample.jpg" },
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     { name: "Teriyaki", category: "Unli Wings", description: "Japanese-style teriyaki glaze", rating: 4, image: "sample.jpg" }
   ];
 
-  const menuItems = [
+  export const menuItems = [
     { name: "Sulit Meal", category: "Solo & Bilao", price: "₱119.00", description: "3pcs + Java Rice", image: "sample.jpg" },
     { name: "Busog Meal", category: "Solo & Bilao", price: "₱199.00", description: "6pcs + Java Rice", image: "sample.jpg" },
     { name: "Small Bilao", category: "Solo & Bilao", price: "₱449.00", description: "12-15pcs", image: "sample.jpg" },
