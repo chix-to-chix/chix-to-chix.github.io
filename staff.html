@@ -617,7 +617,7 @@
 
   // Firebase imports
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+  import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
   import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
   const firebaseConfig = {
@@ -688,7 +688,7 @@
   });
 
   // Set up real-time listener for requests
-  function setupRealtimeListener() {
+    function setupRealtimeListener() {
     const requestsRef = ref(database, 'requests');
     
     onValue(requestsRef, (snapshot) => {
@@ -703,7 +703,8 @@
       let hasPendingRequests = false;
       
       Object.entries(requests).forEach(([id, request]) => {
-        if (request.status !== 'completed') {
+        // Only show requests that are neither completed nor deleted
+        if (request.status !== 'completed' && request.status !== 'deleted') {
           hasPendingRequests = true;
           renderRequestCard(id, request);
         }
@@ -1007,18 +1008,20 @@
       currentRequestId = null;
     });
 
-    confirmDeleteBtn.addEventListener('click', () => {
-      if (currentRequestId) {
-        update(ref(database, `requests/${currentRequestId}`), { 
-          status: 'deleted',
-          deletedAt: Date.now(),
-          deletedBy: currentUser?.uid || 'staff'
-        }).then(() => {
+  confirmDeleteBtn.addEventListener('click', () => {
+    if (currentRequestId) {
+      // Remove the request completely from Firebase
+      remove(ref(database, `requests/${currentRequestId}`))
+        .then(() => {
           deleteModal.style.display = 'none';
           currentRequestId = null;
+        })
+        .catch(error => {
+          console.error("Error deleting request:", error);
+          alert("Failed to delete request. Please try again.");
         });
-      }
-    });
+    }
+  });                    
 
 
   document.querySelectorAll('.close-modal').forEach(btn => {
