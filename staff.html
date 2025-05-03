@@ -284,7 +284,14 @@
     }
     
     .modal-body {
-      margin-bottom: 2rem;
+      overflow-y: auto;
+      max-height: calc(80vh - 150px);
+    }
+
+    body.modal-open {
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
     }
     
     .modal-footer {
@@ -321,7 +328,8 @@
       border-color: var(--text);
     }
 
-    .bill-out-modal .modal-content {
+    .bill-out-modal .modal-content,
+    #manualBillOutModal .modal-content {
       max-height: 85vh;
       overflow-y: auto;
       width: 95%;
@@ -515,7 +523,8 @@
     
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
-      .bill-out-modal .modal-content {
+      .bill-out-modal .modal-content,
+      #manualBillOutModal .modal-content {
         max-width: 500px;
         padding: 1rem;
       }
@@ -882,7 +891,7 @@
   
   // Cancel manual bill out
   cancelManualBillOutBtn.addEventListener('click', () => {
-    manualBillOutModal.style.display = 'none';
+    closeModal(manualBillOutModal);
   });
 
   // Convert all prices to numbers and create simplified menu
@@ -945,9 +954,21 @@
   function openModal(modal) {
     modal.style.display = 'flex';
     document.body.classList.add('modal-open');
-    // Scroll to top of modal when opened
+    
+    // Scroll to top and ensure modal is properly positioned
     setTimeout(() => {
-      modal.querySelector('.modal-content').scrollTop = 0;
+      const modalContent = modal.querySelector('.modal-content');
+      modalContent.scrollTop = 0;
+      
+      // Center modal vertically
+      const viewportHeight = window.innerHeight;
+      const modalHeight = modalContent.offsetHeight;
+      if (modalHeight > viewportHeight * 0.8) {
+        modalContent.style.maxHeight = '80vh';
+        modalContent.style.marginTop = '10vh';
+      } else {
+        modalContent.style.marginTop = '0';
+      }
     }, 50);
   }
   
