@@ -14,6 +14,8 @@
       --secondary: #5a3921;
       --accent: #e6a336;
       --success: #4CAF50;
+      --danger: #f44336;
+      --info: #2196F3;
       --text: #5a4a3a;
       --text-light: #8c7b6b;
       --bg: #f8f3e8;
@@ -24,7 +26,7 @@
       --shadow-lg: 0 8px 16px rgba(0,0,0,0.15);
       --transition: all 0.2s ease;
     }
-
+    
     body {
       font-family: 'Poppins', sans-serif;
       background-color: var(--bg);
@@ -146,6 +148,7 @@
     .request-actions {
       display: flex;
       gap: 0.75rem;
+      justify-content: space-between;
     }
     
     .request-actions button {
@@ -159,6 +162,7 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      flex: 1;
     }
     
     .btn-complete {
@@ -167,6 +171,15 @@
     }
     
     .btn-complete:hover {
+      opacity: 0.9;
+    }
+
+    .btn-delete {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-delete:hover {
       opacity: 0.9;
     }
     
@@ -519,6 +532,25 @@
     </div>
   </div>
 
+  <!-- Delete Confirmation Modal -->
+  <div class="modal" id="deleteModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Delete Request</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this request?</p>
+        <p><strong>Table:</strong> <span id="deleteTableNumber"></span></p>
+        <p><strong>Request:</strong> <span id="deleteRequestType"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="cancelDelete">Cancel</button>
+        <button class="modal-btn modal-btn-danger" id="confirmDelete">Delete</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Bill Out Modal -->
   <div class="modal bill-out-modal" id="billOutModal">
     <div class="modal-content">
@@ -617,6 +649,11 @@
   const changeAmountEl = document.getElementById('changeAmount');
   const submitBillOutBtn = document.getElementById('submitBillOut');
   const cancelBillOutBtn = document.getElementById('cancelBillOut');
+  const deleteModal = document.getElementById('deleteModal');
+  const deleteTableNumber = document.getElementById('deleteTableNumber');
+  const deleteRequestType = document.getElementById('deleteRequestType');
+  const cancelDeleteBtn = document.getElementById('cancelDelete');
+  const confirmDeleteBtn = document.getElementById('confirmDelete');
 
   let currentRequestId = null;
   let currentUser = null;
@@ -689,26 +726,32 @@
 
   // Render a request card
   function renderRequestCard(id, request) {
-    const card = document.createElement('div');
-    card.className = `request-card ${request.action.replace(/-/g, ' ')}`;
-    
-    card.innerHTML = `
-      <div class="request-info">
-        <h3>Table ${request.tableNumber} - ${formatAction(request.action)}</h3>
-        <p><i class="far fa-clock"></i> ${getTimeAgo(request.timestamp)}</p>
-      </div>
-      <div class="request-actions">
-        <button class="btn-complete" data-id="${id}">
-          <i class="fas fa-check"></i> Complete
-        </button>
-      </div>
-    `;
-    
-    const completeBtn = card.querySelector('.btn-complete');
-    completeBtn.addEventListener('click', (e) => handleCompleteClick(e, id));
-    
-    requestsContainer.appendChild(card);
-    playNotificationSound();
+      const card = document.createElement('div');
+      card.className = `request-card ${request.action.replace(/-/g, ' ')}`;
+      
+      card.innerHTML = `
+        <div class="request-info">
+          <h3>Table ${request.tableNumber} - ${formatAction(request.action)}</h3>
+          <p><i class="far fa-clock"></i> ${getTimeAgo(request.timestamp)}</p>
+        </div>
+        <div class="request-actions">
+          <button class="btn-complete" data-id="${id}">
+            <i class="fas fa-check"></i> Complete
+          </button>
+          <button class="btn-delete" data-id="${id}">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+        </div>
+      `;
+      
+      const completeBtn = card.querySelector('.btn-complete');
+      completeBtn.addEventListener('click', (e) => handleCompleteClick(e, id));
+      
+      const deleteBtn = card.querySelector('.btn-delete');
+      deleteBtn.addEventListener('click', (e) => handleDeleteClick(e, id));
+      
+      requestsContainer.appendChild(card);
+      playNotificationSound();
   }
 
   function handleCompleteClick(e, id) {
@@ -728,6 +771,18 @@
       document.getElementById('completeRequestType').textContent = requestType;
       completeModal.style.display = 'flex';
     }
+  }
+
+  function handleDeleteClick(e, id) {
+      e.stopPropagation();
+      currentRequestId = id;
+      const card = e.target.closest('.request-card');
+      const tableNumber = card.querySelector('h3').textContent.match(/Table (\d+)/)[1];
+      const requestType = card.querySelector('h3').textContent.split(' - ')[1];
+      
+      deleteTableNumber.textContent = tableNumber;
+      deleteRequestType.textContent = requestType;
+      deleteModal.style.display = 'flex';
   }
 
   function playNotificationSound() {
@@ -946,6 +1001,25 @@
     billOutModal.style.display = 'none';
     resetBillOutForm();
   });
+
+  cancelDeleteBtn.addEventListener('click', () => {
+      deleteModal.style.display = 'none';
+      currentRequestId = null;
+    });
+
+    confirmDeleteBtn.addEventListener('click', () => {
+      if (currentRequestId) {
+        update(ref(database, `requests/${currentRequestId}`), { 
+          status: 'deleted',
+          deletedAt: Date.now(),
+          deletedBy: currentUser?.uid || 'staff'
+        }).then(() => {
+          deleteModal.style.display = 'none';
+          currentRequestId = null;
+        });
+      }
+    });
+
 
   document.querySelectorAll('.close-modal').forEach(btn => {
     btn.addEventListener('click', () => {
