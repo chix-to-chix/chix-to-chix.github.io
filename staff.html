@@ -118,15 +118,15 @@
       box-shadow: var(--shadow-md);
     }
     
-    .request-card.ready to order {
+    .request-card.ready-to-order {
       border-left-color: var(--success);
     }
     
-    .request-card.need assistance {
+    .request-card.need-assistance {
       border-left-color: var(--accent);
     }
     
-    .request-card.bill out {
+    .request-card.bill-out {
       border-left-color: var(--secondary);
     }
     
@@ -498,8 +498,15 @@
       }
 
       .order-item {
-        flex-direction: column;
+        flex-direction: row;
+        align-items: center;
         gap: 0.5rem;
+      }
+
+      .order-select {
+        width: calc(100% - 40px);
+        padding: 0.9rem;
+        font-size: 1rem;
       }
 
       .order-items {
@@ -507,7 +514,9 @@
       }
       
       .remove-order {
-        align-self: flex-end;
+        flex-shrink: 0; 
+        padding: 0.5rem;
+        align-self: center;
       }
 
       .order-summary {
@@ -776,7 +785,6 @@
   // Render a request card
   function renderRequestCard(id, request) {
       const card = document.createElement('div');
-      // Fix class name by replacing spaces with hyphens
       const actionClass = request.action.toLowerCase().replace(/ /g, '-');
       card.className = `request-card ${actionClass}`;
       
