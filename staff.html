@@ -322,9 +322,10 @@
     }
 
     .bill-out-modal .modal-content {
-      max-width: 500px;
-      max-height: 90vh;
+      max-height: 85vh;
       overflow-y: auto;
+      width: 95%;
+      padding: 1rem;
     }
 
     .bill-out-form {
@@ -496,6 +497,10 @@
     .btn-manual-billout:hover {
       background: var(--primary);
     }
+
+    body.modal-open {
+      overflow: hidden;
+    }
     
     @keyframes modalFadeIn {
       from {
@@ -511,12 +516,20 @@
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .bill-out-modal .modal-content {
-        width: 95%;
+        max-width: 500px;
         padding: 1rem;
       }
       
       .staff-container {
         padding: 1rem;
+        overflow-x: hidden;
+      }
+
+      .staff-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
       }
       
       .staff-header h1 {
@@ -524,13 +537,28 @@
       }
 
       .header-actions {
-        flex-direction: column;
-        gap: 0.5rem;
+        width: 100%;
+        flex-direction: row;
+        gap: 0.75rem;
+        justify-content: flex-end;
       }
       
       .btn-manual-billout, #logoutBtn {
-        padding: 0.5rem 1rem;
+        padding: 0.6rem 1rem;
         font-size: 0.9rem;
+        flex: 1;
+      }
+
+      .bill-out-modal .modal-content {
+        max-height: 85vh;
+        overflow-y: auto;
+        width: 95%;
+        padding: 1rem;
+      }
+
+      .form-control, .order-select {
+        padding: 0.9rem;
+        font-size: 1rem;
       }
       
       .requests-container {
@@ -599,7 +627,6 @@
         </button>
         <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
-      <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
     
     <div class="requests-container" id="requestsContainer">
@@ -840,7 +867,7 @@
 
   // Open manual bill out modal
   manualBillOutBtn.addEventListener('click', () => {
-    manualBillOutModal.style.display = 'flex';
+    openModal(manualBillOutModal);
     resetManualBillOutForm();
   });
   
@@ -914,6 +941,22 @@
     });
   }
 
+
+  function openModal(modal) {
+    modal.style.display = 'flex';
+    document.body.classList.add('modal-open');
+    // Scroll to top of modal when opened
+    setTimeout(() => {
+      modal.querySelector('.modal-content').scrollTop = 0;
+    }, 50);
+  }
+  
+  // Add this to your modal close handlers
+  function closeModal(modal) {
+    modal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+  }
+   
   // Functions for manual bill out
   function addManualOrderItem() {
     const newItem = document.createElement('div');
