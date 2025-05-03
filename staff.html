@@ -453,6 +453,29 @@
       font-weight: 500;
       color: var(--text);
     }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    .btn-manual-billout {
+      background: var(--secondary);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-manual-billout:hover {
+      background: var(--primary);
+    }
     
     @keyframes modalFadeIn {
       from {
@@ -478,6 +501,16 @@
       
       .staff-header h1 {
         font-size: 1.5rem;
+      }
+
+      .header-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .btn-manual-billout, #logoutBtn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
       }
       
       .requests-container {
@@ -540,6 +573,12 @@
   <div class="staff-container">
     <div class="staff-header">
       <h1><i class="fas fa-concierge-bell"></i> Staff Dashboard</h1>
+      <div class="header-actions">
+        <button id="manualBillOutBtn" class="btn-manual-billout">
+          <i class="fas fa-receipt"></i> Manual Bill Out
+        </button>
+        <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </div>
       <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
     
@@ -655,6 +694,59 @@
     </div>
   </div>
 
+  <!-- Manual Bill Out Modal -->
+  <div class="modal" id="manualBillOutModal">
+    <div class="modal-content bill-out-modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Manual Bill Out</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form class="bill-out-form" id="manualBillOutForm">
+          <div class="form-group">
+            <label class="form-label" for="manualTableNumber">Table Number</label>
+            <input type="number" id="manualTableNumber" class="form-control" min="1" required>
+          </div>
+          
+          <!-- Same order items form as regular bill out -->
+          <div class="order-items-section">
+            <label class="form-label">Order/s</label>
+            <div class="order-items" id="manualOrderItemsContainer">
+              <!-- Order items will be added here -->
+            </div>
+            <button type="button" class="add-order-btn" id="addManualOrderBtn">
+              <i class="fas fa-plus"></i> Add Order Item
+            </button>
+          </div>
+  
+          <div class="form-group">
+            <label class="form-label" for="manualPax">Pax</label>
+            <input type="number" id="manualPax" class="form-control" min="1" required>
+          </div>
+  
+          <div class="order-summary">
+            <div class="summary-row">
+              <span>Total Amount:</span>
+              <span id="manualTotalAmount">₱0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Paid Amount:</span>
+              <input type="number" id="manualPaidAmount" class="form-control" min="0" step="0.01" required>
+            </div>
+            <div class="summary-row total">
+              <span>Change:</span>
+              <span id="manualChangeAmount">₱0.00</span>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" id="cancelManualBillOut">Cancel</button>
+        <button class="modal-btn modal-btn-primary" id="submitManualBillOut">Submit Bill</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Order Item Template (hidden) -->
   <div id="orderItemTemplate" style="display: none;">
     <div class="order-item">
@@ -711,11 +803,40 @@
   const deleteRequestType = document.getElementById('deleteRequestType');
   const cancelDeleteBtn = document.getElementById('cancelDelete');
   const confirmDeleteBtn = document.getElementById('confirmDelete');
+  const manualBillOutBtn = document.getElementById('manualBillOutBtn');
+  const manualBillOutModal = document.getElementById('manualBillOutModal');
+  const addManualOrderBtn = document.getElementById('addManualOrderBtn');
+  const manualOrderItemsContainer = document.getElementById('manualOrderItemsContainer');
+  const manualTotalAmountEl = document.getElementById('manualTotalAmount');
+  const manualPaidAmountEl = document.getElementById('manualPaidAmount');
+  const manualChangeAmountEl = document.getElementById('manualChangeAmount');
+  const submitManualBillOutBtn = document.getElementById('submitManualBillOut');
+  const cancelManualBillOutBtn = document.getElementById('cancelManualBillOut');
 
   let currentRequestId = null;
   let currentUser = null;
   let currentBillOutRequest = null;
   let totalAmount = 0;
+
+  // Open manual bill out modal
+  manualBillOutBtn.addEventListener('click', () => {
+    manualBillOutModal.style.display = 'flex';
+    resetManualBillOutForm();
+  });
+  
+  // Add order item to manual bill out
+  addManualOrderBtn.addEventListener('click', () => addManualOrderItem());
+  
+  // Calculate manual bill out totals
+  manualPaidAmountEl.addEventListener('input', calculateManualChange);
+  
+  // Submit manual bill out
+  submitManualBillOutBtn.addEventListener('click', submitManualBillOut);
+  
+  // Cancel manual bill out
+  cancelManualBillOutBtn.addEventListener('click', () => {
+    manualBillOutModal.style.display = 'none';
+  });
 
   // Convert all prices to numbers and create simplified menu
   const billingMenuItems = [
@@ -745,7 +866,7 @@
   });
 
   // Set up real-time listener for requests
-    function setupRealtimeListener() {
+  function setupRealtimeListener() {
     const requestsRef = ref(database, 'requests');
     
     onValue(requestsRef, (snapshot) => {
@@ -771,6 +892,127 @@
         showEmptyState();
       }
     });
+  }
+
+  // Functions for manual bill out
+  function addManualOrderItem() {
+    const newItem = document.createElement('div');
+    newItem.className = 'order-item';
+    newItem.innerHTML = `
+      <select class="order-select">
+        <option value="">Select an item</option>
+      </select>
+      <button class="remove-order" type="button">
+        <i class="fas fa-times"></i>
+      </button>
+    `;
+    
+    const select = newItem.querySelector('.order-select');
+    populateOrderDropdown(select);
+    
+    select.addEventListener('change', () => {
+      updateOrderItem(select);
+      calculateManualTotal();
+    });
+    
+    newItem.querySelector('.remove-order').addEventListener('click', (e) => {
+      e.target.closest('.order-item').remove();
+      calculateManualTotal();
+    });
+    
+    manualOrderItemsContainer.appendChild(newItem);
+  }
+
+  function calculateManualTotal() {
+    let total = 0;
+    const selects = manualOrderItemsContainer.querySelectorAll('.order-select');
+    
+    selects.forEach(select => {
+      if (select.value && select.dataset.price) {
+        total += parseFloat(select.dataset.price);
+      }
+    });
+    
+    manualTotalAmountEl.textContent = `₱${total.toFixed(2)}`;
+    calculateManualChange();
+  }
+  
+  function calculateManualChange() {
+    const paidAmount = parseFloat(manualPaidAmountEl.value) || 0;
+    const total = parseFloat(manualTotalAmountEl.textContent.replace(/[^\d.]/g, '')) || 0;
+    const change = paidAmount - total;
+    manualChangeAmountEl.textContent = `₱${change.toFixed(2)}`;
+  }
+  
+  function resetManualBillOutForm() {
+    manualOrderItemsContainer.innerHTML = '';
+    document.getElementById('manualTableNumber').value = '';
+    document.getElementById('manualPax').value = '';
+    manualPaidAmountEl.value = '';
+    manualTotalAmountEl.textContent = '₱0.00';
+    manualChangeAmountEl.textContent = '₱0.00';
+    addManualOrderItem(); // Add initial order item
+  }
+
+  function submitManualBillOut() {
+    const tableNumber = document.getElementById('manualTableNumber').value;
+    const pax = document.getElementById('manualPax').value;
+    const paidAmount = parseFloat(manualPaidAmountEl.value);
+    const totalAmount = parseFloat(manualTotalAmountEl.textContent.replace(/[^\d.]/g, ''));
+  
+    // Validation
+    if (!tableNumber || !pax || isNaN(paidAmount)) {
+      alert('Please fill in all required fields');
+      return;
+    }
+  
+    if (totalAmount <= 0) {
+      alert('Please add at least one order item');
+      return;
+    }
+  
+    // Get all order items
+    const orders = [];
+    const selects = manualOrderItemsContainer.querySelectorAll('.order-select');
+    
+    selects.forEach(select => {
+      if (select.value) {
+        const selectedOption = select.options[select.selectedIndex];
+        orders.push({
+          item: select.value,
+          price: parseFloat(selectedOption.dataset.price)
+        });
+      }
+    });
+  
+    // Create a new request in Firebase
+    const requestsRef = ref(database, 'requests');
+    const newRequest = {
+      action: 'bill out',
+      tableNumber: tableNumber,
+      timestamp: Date.now(),
+      status: 'completed', // Mark as completed immediately
+      completedAt: Date.now(),
+      completedBy: currentUser?.uid || 'staff',
+      billDetails: {
+        pax: parseInt(pax),
+        orders: orders,
+        totalAmount: totalAmount,
+        paidAmount: paidAmount,
+        change: paidAmount - totalAmount
+      }
+    };
+  
+    push(requestsRef, newRequest)
+      .then(() => {
+        manualBillOutModal.style.display = 'none';
+        resetManualBillOutForm();
+        showNotification('Bill out submitted successfully!', 'success');
+      })
+      .catch(error => {
+        console.error("Error submitting manual bill:", error);
+        alert("Failed to submit bill. Please try again.");
+      });
   }
 
   function showEmptyState() {
