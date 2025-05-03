@@ -36,6 +36,10 @@
       min-height: 100vh;
     }
 
+    button:active {
+      transform: scale(0.98);
+    }
+
     .texture-overlay {
       position: fixed;
       top: 0;
@@ -114,15 +118,15 @@
       box-shadow: var(--shadow-md);
     }
     
-    .request-card.ready-to-order {
+    .request-card.ready to order {
       border-left-color: var(--success);
     }
     
-    .request-card.need-assistance {
+    .request-card.need assistance {
       border-left-color: var(--accent);
     }
     
-    .request-card.bill-out {
+    .request-card.bill out {
       border-left-color: var(--secondary);
     }
     
@@ -172,6 +176,15 @@
     
     .btn-complete:hover {
       opacity: 0.9;
+    }
+
+    .btn-complete, .btn-delete {
+      font-size: 0.85rem;
+      padding: 0.5rem 0.75rem;
+    }
+
+    .btn-complete i, .btn-delete i {
+      margin-right: 0.25rem;
     }
 
     .btn-delete {
@@ -237,9 +250,9 @@
     }
     
     .modal-title {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       color: var(--secondary);
-      margin: 0;
+      font-weight: 600;
     }
     
     .close-modal {
@@ -290,6 +303,8 @@
 
     .bill-out-modal .modal-content {
       max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     .bill-out-form {
@@ -309,6 +324,11 @@
       color: var(--text);
     }
 
+    .form-group label::after {
+      content: " *";
+      color: var(--danger);
+    }
+
     .form-control {
       width: 100%;
       padding: 0.75rem;
@@ -322,6 +342,11 @@
     .form-control:disabled {
       background-color: var(--bg-light);
       color: var(--text);
+    }
+
+    .form-control, .order-select {
+      padding: 0.85rem;
+      font-size: 1rem;
     }
 
     .order-items {
@@ -442,6 +467,11 @@
     
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
+      .bill-out-modal .modal-content {
+        width: 95%;
+        padding: 1rem;
+      }
+      
       .staff-container {
         padding: 1rem;
       }
@@ -471,9 +501,27 @@
         flex-direction: column;
         gap: 0.5rem;
       }
+
+      .order-items {
+        max-height: 150px;
+      }
       
       .remove-order {
         align-self: flex-end;
+      }
+
+      .order-summary {
+        padding: 0.75rem;
+      }
+      
+      .modal-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .modal-btn {
+        width: 100%;
+        padding: 0.75rem;
       }
     }
   </style>
@@ -728,7 +776,9 @@
   // Render a request card
   function renderRequestCard(id, request) {
       const card = document.createElement('div');
-      card.className = `request-card ${request.action.replace(/-/g, ' ')}`;
+      // Fix class name by replacing spaces with hyphens
+      const actionClass = request.action.toLowerCase().replace(/ /g, '-');
+      card.className = `request-card ${actionClass}`;
       
       card.innerHTML = `
         <div class="request-info">
@@ -756,23 +806,28 @@
   }
 
   function handleCompleteClick(e, id) {
-    e.stopPropagation();
-    currentRequestId = id;
-    const card = e.target.closest('.request-card');
-    const tableNumber = card.querySelector('h3').textContent.match(/Table (\d+)/)[1];
-    const requestType = card.querySelector('h3').textContent.split(' - ')[1];
-    
-    if (requestType === 'Bill Out') {
-      currentBillOutRequest = { id: currentRequestId, tableNumber };
-      billOutTableNumber.textContent = tableNumber;
-      billOutModal.style.display = 'flex';
-      resetBillOutForm();
-    } else {
-      document.getElementById('completeTableNumber').textContent = tableNumber;
-      document.getElementById('completeRequestType').textContent = requestType;
-      completeModal.style.display = 'flex';
+      e.stopPropagation();
+      currentRequestId = id;
+      const card = e.target.closest('.request-card');
+      const tableNumber = card.querySelector('h3').textContent.match(/Table (\d+)/)[1];
+      const requestType = card.querySelector('h3').textContent.split(' - ')[1];
+      
+      if (requestType === 'Bill Out') {
+        currentBillOutRequest = { id: currentRequestId, tableNumber };
+        billOutTableNumber.textContent = tableNumber;
+        billOutModal.style.display = 'flex';
+        resetBillOutForm();
+        
+        // Scroll to top of modal when opened
+        setTimeout(() => {
+          billOutModal.querySelector('.modal-content').scrollTop = 0;
+        }, 50);
+      } else {
+        document.getElementById('completeTableNumber').textContent = tableNumber;
+        document.getElementById('completeRequestType').textContent = requestType;
+        completeModal.style.display = 'flex';
+      }
     }
-  }
 
   function handleDeleteClick(e, id) {
       e.stopPropagation();
