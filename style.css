@@ -1,21 +1,22 @@
 :root {
-  --primary: #b85c38;
-  --primary-light: #e0a080;
-  --secondary: #5a3921;
-  --accent: #e6a336;
-  --text: #5a4a3a;
-  --text-light: #8c7b6b;
-  --bg: #f8f3e8;
-  --bg-light: #fefaf2;
-  --card-bg: rgba(255, 255, 255, 0.9);
+  --primary: #ba0016; /* Vibrant red */
+  --primary-light: #e63946; /* Lighter red */
+  --secondary: #025243; /* Deep green */
+  --accent: #fcbd01; /* Bright yellow */
+  --text: #3a3a3a; /* Dark gray */
+  --text-light: #6d6d6d; /* Medium gray */
+  --bg: #f8f8f8; /* Light gray background */
+  --bg-light: #ffffff; /* White */
+  --card-bg: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
   --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --limewash: #b4afab; /* Limewash gray */
 }
 
 body {
   margin: 0;
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(to bottom, var(--bg), var(--bg-light));
+  background: linear-gradient(to bottom, var(--bg), var(--limewash));
   color: var(--text);
   min-height: 100vh;
   position: relative;
@@ -28,7 +29,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M0 0 L100 0 L100 100 L0 100 Z" fill="none" stroke="%23e0d5c8" stroke-width="0.5" stroke-opacity="0.2"/></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M0 0 L100 0 L100 100 L0 100 Z" fill="none" stroke="%23b4afab" stroke-width="0.5" stroke-opacity="0.2"/></svg>');
   background-size: 40px 40px;
   pointer-events: none;
   z-index: 1;
@@ -130,7 +131,7 @@ h1 .highlight {
 
 #searchBar:focus {
   outline: none;
-  box-shadow: 0 5px 15px rgba(184, 92, 56, 0.2);
+  box-shadow: 0 5px 15px rgba(186, 0, 22, 0.2);
 }
 
 .category-tabs {
@@ -324,6 +325,7 @@ h1 .highlight {
   top: 15px;
   font-size: 1.5rem;
   cursor: pointer;
+  color: var(--primary);
 }
 
 #tableNumber {
