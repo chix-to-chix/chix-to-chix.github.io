@@ -32,7 +32,7 @@ export const menuItems = [
   { name: "Bottled Water", category: "Beverages", price: "₱15.00", description: "Purified water", image: "water.png" },
   { name: "Extra Java", category: "Extras", price: "₱30.00", description: "Java rice", image: "java.png" },
   { name: "Cheesy Overload Fries", category: "Extras", price: "₱59.00", description: "Overload fries with cheese", image: "fries.png" },
-  { name: "Extra Sauce", category: "Extras", price: "₱25.00", description: "Special chicken sauce", image: "sample.jpg" },
+  { name: "Extra Sauce", category: "Extras", price: "₱25.00", description: "Special chicken sauce", image: "sauces.png" },
   { name: "Garlic Mayo Dip", category: "Extras", price: "₱30.00", description: "Garlic Mayo dipping sauce", image: "sample.jpg" }
 ];
 
