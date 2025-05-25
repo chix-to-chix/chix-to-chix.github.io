@@ -10,7 +10,7 @@
   --card-bg: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
   --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  --limewash: #c6c3c1; /* Limewash gray */
+  --limewash: #dad7d5; /* Limewash gray */
 }
 
 body {
