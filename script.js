@@ -67,7 +67,7 @@ export function initializeCustomerMenu() {
       const unliCard = document.createElement("div");
       unliCard.className = "menu-card";
       unliCard.innerHTML = `
-        <img src="img/sample.jpg" alt="Unli Wings" />
+        <img src="img/unli.png" alt="Unli Wings" />
         <div class="content">
           <h3>Unli Wings</h3>
           <p>All-you-can-eat chicken wings</p>
