@@ -15,6 +15,7 @@ export const flavors = [
   { name: "Sweet Chili", category: "Unli Wings", description: "Thai-style sweet chili", rating: 4, image: "sample.jpg" },
   { name: "Hickory Barbeque", category: "Unli Wings", description: "Smoky barbeque flavor", rating: 4, image: "sample.jpg" },
   { name: "Soy Garlic", category: "Unli Wings", description: "Savory soy garlic", rating: 4, image: "sample.jpg" },
+  { name: "Honey Butter", category: "Unli Wings", description: "Sweet honey butter", rating: 4, image: "sample.jpg" },
   { name: "Teriyaki", category: "Unli Wings", description: "Japanese-style teriyaki glaze", rating: 4, image: "sample.jpg" }
 ];
 
@@ -29,11 +30,10 @@ export const menuItems = [
   { name: "Softdrinks Mismo", category: "Beverages", price: "₱30.00", description: "Your choice of soda", image: "mismo.png" },
   { name: "Softdrinks 1.5L", category: "Beverages", price: "₱99.00", description: "1.5 liter bottle", image: "coke.png" },
   { name: "Bottled Water", category: "Beverages", price: "₱15.00", description: "Purified water", image: "water.png" },
-  { name: "Extra Rice", category: "Extras", price: "₱20.00", description: "Steamed rice", image: "sample.jpg" },
   { name: "Extra Java", category: "Extras", price: "₱30.00", description: "Java rice", image: "sample.jpg" },
-  { name: "Buttered Corn", category: "Extras", price: "₱25.00", description: "Sweet buttered corn", image: "sample.jpg" },
-  { name: "Cheese Fries", category: "Extras", price: "₱59.00", description: "Crispy fries with cheese", image: "sample.jpg" },
-  { name: "Extra Sauce", category: "Extras", price: "₱25.00", description: "Special chicken sauce", image: "sample.jpg" }
+  { name: "Cheesy Overload Fries", category: "Extras", price: "₱59.00", description: "Overload fries with cheese", image: "sample.jpg" },
+  { name: "Extra Sauce", category: "Extras", price: "₱25.00", description: "Special chicken sauce", image: "sample.jpg" },
+  { name: "Mayo Dip", category: "Extras", price: "₱30.00", description: "Mayonaise dipping sauce", image: "sample.jpg" }
 ];
 
 export const unliPrice = 299.00;
