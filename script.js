@@ -22,6 +22,7 @@ export const flavors = [
 export const menuItems = [
   { name: "Sulit Meal", category: "Solo & Bilao", price: "₱119.00", description: "3pcs + Java Rice", image: "sulit.png" },
   { name: "Busog Meal", category: "Solo & Bilao", price: "₱199.00", description: "6pcs + Java Rice", image: "busog.png" },
+  { name: "Chix Sakto", category: "Solo & Bilao", price: "₱169.00", description: "5 pcs wings (1 flavor)", image: "sakto.png" },
   { name: "Small Bilao", category: "Solo & Bilao", price: "₱449.00", description: "12-15pcs", image: "smallbilao.png" },
   { name: "Medium Bilao", category: "Solo & Bilao", price: "₱549.00", description: "18-22pcs", image: "mediumbilao.png" },
   { name: "Large Bilao", category: "Solo & Bilao", price: "₱999.00", description: "35-40pcs", image: "largebilao.png" },
