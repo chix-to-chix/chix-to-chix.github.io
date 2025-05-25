@@ -22,16 +22,16 @@ export const flavors = [
 export const menuItems = [
   { name: "Sulit Meal", category: "Solo & Bilao", price: "₱119.00", description: "3pcs + Java Rice", image: "sulit.png" },
   { name: "Busog Meal", category: "Solo & Bilao", price: "₱199.00", description: "6pcs + Java Rice", image: "busog.png" },
-  { name: "Small Bilao", category: "Solo & Bilao", price: "₱449.00", description: "12-15pcs", image: "sample.jpg" },
-  { name: "Medium Bilao", category: "Solo & Bilao", price: "₱549.00", description: "18-22pcs", image: "sample.jpg" },
+  { name: "Small Bilao", category: "Solo & Bilao", price: "₱449.00", description: "12-15pcs", image: "smallbilao.png" },
+  { name: "Medium Bilao", category: "Solo & Bilao", price: "₱549.00", description: "18-22pcs", image: "mediumbilao.png" },
   { name: "Large Bilao", category: "Solo & Bilao", price: "₱999.00", description: "35-40pcs", image: "sample.jpg" },
   { name: "Big Pitcher Iced Tea", category: "Beverages", price: "₱99.00", description: "Refreshing iced tea", image: "bigpitcher.png" },
   { name: "Small Pitcher Iced Tea", category: "Beverages", price: "₱69.00", description: "Refreshing iced tea", image: "smallpitcher.png" },
   { name: "Softdrinks Mismo", category: "Beverages", price: "₱30.00", description: "Your choice of soda", image: "mismo.png" },
   { name: "Softdrinks 1.5L", category: "Beverages", price: "₱99.00", description: "1.5 liter bottle", image: "coke.png" },
   { name: "Bottled Water", category: "Beverages", price: "₱15.00", description: "Purified water", image: "water.png" },
-  { name: "Extra Java", category: "Extras", price: "₱30.00", description: "Java rice", image: "sample.jpg" },
-  { name: "Cheesy Overload Fries", category: "Extras", price: "₱59.00", description: "Overload fries with cheese", image: "sample.jpg" },
+  { name: "Extra Java", category: "Extras", price: "₱30.00", description: "Java rice", image: "java.png" },
+  { name: "Cheesy Overload Fries", category: "Extras", price: "₱59.00", description: "Overload fries with cheese", image: "fries.png" },
   { name: "Extra Sauce", category: "Extras", price: "₱25.00", description: "Special chicken sauce", image: "sample.jpg" },
   { name: "Garlic Mayo Dip", category: "Extras", price: "₱30.00", description: "Garlic Mayo dipping sauce", image: "sample.jpg" }
 ];
