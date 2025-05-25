@@ -24,7 +24,7 @@ export const menuItems = [
   { name: "Busog Meal", category: "Solo & Bilao", price: "₱199.00", description: "6pcs + Java Rice", image: "busog.png" },
   { name: "Small Bilao", category: "Solo & Bilao", price: "₱449.00", description: "12-15pcs", image: "smallbilao.png" },
   { name: "Medium Bilao", category: "Solo & Bilao", price: "₱549.00", description: "18-22pcs", image: "mediumbilao.png" },
-  { name: "Large Bilao", category: "Solo & Bilao", price: "₱999.00", description: "35-40pcs", image: "sample.jpg" },
+  { name: "Large Bilao", category: "Solo & Bilao", price: "₱999.00", description: "35-40pcs", image: "largebilao.png" },
   { name: "Big Pitcher Iced Tea", category: "Beverages", price: "₱99.00", description: "Refreshing iced tea", image: "bigpitcher.png" },
   { name: "Small Pitcher Iced Tea", category: "Beverages", price: "₱69.00", description: "Refreshing iced tea", image: "smallpitcher.png" },
   { name: "Softdrinks Mismo", category: "Beverages", price: "₱30.00", description: "Your choice of soda", image: "mismo.png" },
