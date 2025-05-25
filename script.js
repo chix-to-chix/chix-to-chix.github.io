@@ -46,6 +46,10 @@ export function initializeCustomerMenu() {
   const categoryButtons = document.querySelectorAll(".category-tabs button");
   const priceHeader = document.querySelector(".unli-price-header");
 
+  // Track current search term and category
+  let currentSearchTerm = "";
+  let currentCategory = "all";
+
   function renderMenu(items, category = "all") {
     menuList.innerHTML = "";
     
@@ -53,8 +57,15 @@ export function initializeCustomerMenu() {
       priceHeader.style.display = "block";
       priceHeader.textContent = `Unlimited Wings - ₱${unliPrice.toFixed(2)}`;
       
-      // Show only flavor cards for Unli Wings
-      flavors.forEach(flavor => {
+      // Filter flavors based on search term
+      const filteredFlavors = currentSearchTerm 
+        ? flavors.filter(flavor => 
+            flavor.name.toLowerCase().includes(currentSearchTerm) || 
+            flavor.description.toLowerCase().includes(currentSearchTerm)
+          )
+        : flavors;
+      
+      filteredFlavors.forEach(flavor => {
         const card = createCard(flavor);
         menuList.appendChild(card);
       });
@@ -64,47 +75,65 @@ export function initializeCustomerMenu() {
     }
 
     if (category === "all") {
-      // Show the Unli Wings summary card first
-      const unliCard = document.createElement("div");
-      unliCard.className = "menu-card";
-      unliCard.innerHTML = `
-        <img src="img/unli.png" alt="Unli Wings" />
-        <div class="content">
-          <h3>Unli Wings</h3>
-          <p>All-you-can-eat chicken wings</p>
-          <div class="details">
-            <span class="price">₱${unliPrice.toFixed(2)}</span>
+      // Show the Unli Wings summary card first (if not searching or matches search)
+      if (!currentSearchTerm || 
+          "Unli Wings".toLowerCase().includes(currentSearchTerm) || 
+          "All-you-can-eat chicken wings".toLowerCase().includes(currentSearchTerm)) {
+        const unliCard = document.createElement("div");
+        unliCard.className = "menu-card";
+        unliCard.innerHTML = `
+          <img src="img/unli.png" alt="Unli Wings" />
+          <div class="content">
+            <h3>Unli Wings</h3>
+            <p>All-you-can-eat chicken wings</p>
+            <div class="details">
+              <span class="price">₱${unliPrice.toFixed(2)}</span>
+            </div>
           </div>
-        </div>
-      `;
-      menuList.appendChild(unliCard);
+        `;
+        menuList.appendChild(unliCard);
+      }
       
       // Then show all other menu items grouped by category
       const categories = {};
-      allItems.forEach(item => {
+      const filteredItems = currentSearchTerm 
+        ? allItems.filter(item => 
+            item.name.toLowerCase().includes(currentSearchTerm) || 
+            item.description.toLowerCase().includes(currentSearchTerm)
+          )
+        : allItems;
+      
+      filteredItems.forEach(item => {
         if (!categories[item.category]) {
           categories[item.category] = [];
         }
         categories[item.category].push(item);
       });
       
-      // Add a section for each category
+      // Add a section for each category that has matching items
       Object.entries(categories).forEach(([categoryName, categoryItems]) => {
-        // Add category header
-        const categoryHeader = document.createElement("h2");
-        categoryHeader.className = "category-header";
-        categoryHeader.textContent = `${categoryName}`;
-        menuList.appendChild(categoryHeader);
-        
-        // Add items for this category
-        categoryItems.forEach(item => {
-          const card = createCard(item);
-          menuList.appendChild(card);
-        });
+        if (categoryItems.length > 0) {
+          // Add category header
+          const categoryHeader = document.createElement("h2");
+          categoryHeader.className = "category-header";
+          categoryHeader.textContent = `${categoryName}`;
+          menuList.appendChild(categoryHeader);
+          
+          // Add items for this category
+          categoryItems.forEach(item => {
+            const card = createCard(item);
+            menuList.appendChild(card);
+          });
+        }
       });
     } else {
       // Show only items from the selected category
-      const filteredItems = allItems.filter(item => item.category === category);
+      const filteredItems = allItems.filter(item => 
+        item.category === category && 
+        (!currentSearchTerm || 
+         item.name.toLowerCase().includes(currentSearchTerm) || 
+         item.description.toLowerCase().includes(currentSearchTerm))
+      );
       filteredItems.forEach(item => {
         const card = createCard(item);
         menuList.appendChild(card);
@@ -112,7 +141,6 @@ export function initializeCustomerMenu() {
     }
   }
   
-  // Rest of your code remains the same...
   function createCard(item) {
     const card = document.createElement("div");
     card.className = "menu-card";
@@ -138,47 +166,20 @@ export function initializeCustomerMenu() {
   // Initialize with all items
   renderMenu(allItems);
 
-  // Rest of your event listeners remain the same...
+  // Search event listener
   searchBar.addEventListener("input", (e) => {
-    const value = e.target.value.toLowerCase();
-    const currentCategory = document.querySelector(".category-tabs button.active").dataset.category;
-    
-    if (currentCategory === "all") {
-      const filtered = allItems.filter(item => 
-        item.name.toLowerCase().includes(value) || 
-        item.description.toLowerCase().includes(value)
-      );
-      renderMenu(filtered);
-    } else if (currentCategory === "Unli Wings") {
-      const filtered = flavors.filter(flavor => 
-        flavor.name.toLowerCase().includes(value) || 
-        flavor.description.toLowerCase().includes(value)
-      );
-      renderMenu(filtered, "Unli Wings");
-    } else {
-      const filtered = allItems.filter(item => 
-        item.category === currentCategory && 
-        (item.name.toLowerCase().includes(value) || 
-         item.description.toLowerCase().includes(value))
-      );
-      renderMenu(filtered, currentCategory);
-    }
+    currentSearchTerm = e.target.value.toLowerCase();
+    renderMenu(allItems, currentCategory);
   });
 
+  // Category button event listeners
   categoryButtons.forEach(button => {
     button.addEventListener("click", () => {
       categoryButtons.forEach(btn => btn.classList.remove("active"));
       button.classList.add("active");
       
-      const category = button.dataset.category;
-      if (category === "all") {
-        renderMenu(allItems);
-      } else if (category === "Unli Wings") {
-        renderMenu(flavors, "Unli Wings");
-      } else {
-        const filtered = allItems.filter(item => item.category === category);
-        renderMenu(filtered, category);
-      }
+      currentCategory = button.dataset.category;
+      renderMenu(allItems, currentCategory);
     });
   });
 }
