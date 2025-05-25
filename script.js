@@ -20,12 +20,12 @@ export const flavors = [
 ];
 
 export const menuItems = [
-  { name: "Sulit Meal", category: "Solo & Bilao", price: "₱119.00", description: "3pcs + Java Rice", image: "sulit.png" },
-  { name: "Busog Meal", category: "Solo & Bilao", price: "₱199.00", description: "6pcs + Java Rice", image: "busog.png" },
+  { name: "Sulit Meal", category: "Solo & Bilao", price: "₱119.00", description: "3pcs + Java Rice (1 flavor)", image: "sulit.png" },
+  { name: "Busog Meal", category: "Solo & Bilao", price: "₱199.00", description: "6pcs + Java Rice (2 flavors)", image: "busog.png" },
   { name: "Chix Sakto", category: "Solo & Bilao", price: "₱169.00", description: "5pcs wings (1 flavor)", image: "sakto.png" },
-  { name: "Small Bilao", category: "Solo & Bilao", price: "₱429.00", description: "12-15pcs", image: "smallbilao.png" },
-  { name: "Medium Bilao", category: "Solo & Bilao", price: "₱529.00", description: "18-22pcs", image: "mediumbilao.png" },
-  { name: "Large Bilao", category: "Solo & Bilao", price: "₱969.00", description: "35-40pcs", image: "largebilao.png" },
+  { name: "Small Bilao", category: "Solo & Bilao", price: "₱429.00", description: "12-15pcs (3 flavors)", image: "smallbilao.png" },
+  { name: "Medium Bilao", category: "Solo & Bilao", price: "₱529.00", description: "18-22pcs (5 flavors)", image: "mediumbilao.png" },
+  { name: "Large Bilao", category: "Solo & Bilao", price: "₱969.00", description: "35-40pcs (8 flavors)", image: "largebilao.png" },
   { name: "Big Pitcher Iced Tea", category: "Beverages", price: "₱89.00", description: "Refreshing iced tea", image: "bigpitcher.png" },
   { name: "Small Pitcher Iced Tea", category: "Beverages", price: "₱59.00", description: "Refreshing iced tea", image: "smallpitcher.png" },
   { name: "Softdrinks Mismo", category: "Beverages", price: "₱30.00", description: "Coke mismo 300ml", image: "mismo.png" },
