@@ -33,7 +33,7 @@ export const menuItems = [
   { name: "Extra Java", category: "Extras", price: "₱30.00", description: "Java rice", image: "sample.jpg" },
   { name: "Cheesy Overload Fries", category: "Extras", price: "₱59.00", description: "Overload fries with cheese", image: "sample.jpg" },
   { name: "Extra Sauce", category: "Extras", price: "₱25.00", description: "Special chicken sauce", image: "sample.jpg" },
-  { name: "Mayo Dip", category: "Extras", price: "₱30.00", description: "Mayonaise dipping sauce", image: "sample.jpg" }
+  { name: "Garlic Mayo Dip", category: "Extras", price: "₱30.00", description: "Garlic Mayo dipping sauce", image: "sample.jpg" }
 ];
 
 export const unliPrice = 299.00;
