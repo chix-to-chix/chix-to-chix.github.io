@@ -26,12 +26,20 @@
   </div> -->
 
   <!-- Table Number Modal -->
-  <div class="modal" id="tableModal">
+  <!-- <div class="modal" id="tableModal">
     <div class="modal-content">
       <span class="close-modal">&times;</span>
       <h3 id="modalTitle">Enter Table Number</h3>
       <input type="number" id="tableNumber" placeholder="e.g. 1" min="1">
       <button id="submitTable">Submit</button>
+    </div>
+  </div> -->
+
+  <div id="gameModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2 id="gameTitle"></h2>
+      <p id="gameInstructions"></p>
     </div>
   </div>
 
@@ -61,14 +69,23 @@
       <button data-category="Unli Wings">
         <i class="fas fa-infinity"></i> Flavors
       </button>
-      <button data-category="Solo & Bilao">
-        <i class="fas fa-utensils"></i> Solo & Bilao
+      <button data-category="Combo Meals">
+        <i class="fas fa-utensils"></i> Combo Meals
+      </button>
+      <button data-category="Ala Carte">
+        <i class="fas fa-drumstick-bite"></i> Ala Carte
+      </button>
+      <button data-category="Bilao">
+        <i class="fas fa-bowl-food"></i> Bilao
       </button>
       <button data-category="Beverages">
         <i class="fas fa-glass-whiskey"></i> Beverages
       </button>
       <button data-category="Extras">
         <i class="fas fa-plus-circle"></i> Extras
+      </button>
+      <button data-category="Games">
+        <i class="fas fa-gamepad"></i> Games
       </button>
     </div>
 
